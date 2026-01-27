@@ -1,0 +1,207 @@
+# URGE - Cursor Rules
+
+## Project Overview
+This is a Next.js + Tailwind CSS + shadcn/ui project with a brutalist "anti-SaaS" design aesthetic focused on discipline and habit tracking.
+
+## Design System
+
+### Color Palette
+- **Background**: Deep Obsidian `#050505` - Always use for main background
+- **Text Primary**: Zinc-400 `#a1a1aa` - Standard body text
+- **Text Headings**: Pure White `#ffffff` - All primary headings
+- **Accent/Critical**: Clinical Crimson `#E11D48` - ONLY for critical actions, "urges", or emphasis
+- **Borders**: Zinc-800 `#27272a` - All borders and dividers
+- **Muted Text**: Zinc-600 `#52525b` - Secondary/subtle text
+- **Card Background**: `#0a0a0a` - Slightly lighter than main background
+
+### Typography
+- **Font**: JetBrains Mono (monospace) - Use `font-mono` class
+- **Headings**: Large, bold, tight tracking (`tracking-brutal` utility)
+- **Body**: Monospace font throughout
+- **Sizes**: Use responsive text sizes (e.g., `text-5xl sm:text-7xl md:text-8xl lg:text-9xl`)
+
+### Brutalist Aesthetic Rules
+- **Zero Border Radius**: All elements use `rounded-none` or `border-radius: 0`
+- **Sharp Borders**: Always use `border-2` (2px) for emphasis
+- **Shadow Effects**: Use offset shadows like `shadow-[8px_8px_0_0_#1a1a1a]` for depth
+- **No Gradients**: Except for subtle background effects (keep minimal)
+- **High Contrast**: Stark black/white/crimson only
+
+## Component Patterns
+
+### Buttons
+- Use shadcn Button component with custom variants
+- `commitment` variant: Crimson background, white shadow offset, heavy border
+- All buttons: Zero border-radius, sharp edges
+- Hover states: Translate on active (`active:translate-x-[2px] active:translate-y-[2px]`)
+
+### Cards
+- Dark background `#0a0a0a`
+- Sharp 2px borders `border-2 border-[#27272a]`
+- Offset shadow for depth
+- Hover: Border changes to crimson
+
+### Animations
+- Use Framer Motion for scroll-linked animations
+- Fade-in sections: `useInView` hook with `opacity` and `y` transforms
+- Smooth transitions: `duration: 0.7, ease: "easeOut"`
+- Parallax effects: Use `useScroll` and `useTransform` for hero sections
+
+## Code Style
+
+### TypeScript
+- Use strict TypeScript
+- Prefer explicit types over `any`
+- Use `React.ReactNode` for children props
+
+### React Patterns
+- Use `"use client"` for interactive components
+- Prefer functional components with hooks
+- Use `useRef` for DOM references
+- Use `useInView` for scroll-triggered animations
+
+### Tailwind CSS
+- Use arbitrary values for exact colors: `text-[#E11D48]`
+- Prefer utility classes over custom CSS
+- Use responsive prefixes: `sm:`, `md:`, `lg:`
+- Mobile-first approach
+
+### File Structure
+- Components in `src/components/`
+- UI components in `src/components/ui/`
+- Pages in `src/app/`
+- Use `@/` alias for imports
+
+## Layout Principles
+
+### Anti-SaaS Layout
+- **No Navigation Bar**: Hero section occupies full first fold
+- **Single Column**: All content centered, max-width containers
+- **Massive Headlines**: Headings should be impactful and large
+- **Minimal UI**: Only essential elements visible
+- **Scroll-Driven**: Content reveals as user scrolls
+
+### Section Spacing
+- Use `min-h-screen` for full-height sections
+- Add padding: `py-12 md:py-24` for responsive spacing
+- Footer: Proper spacing from content above (use `mt-16 md:mt-24`)
+
+### Scroll Behavior
+- Smooth scrolling: `scroll-smooth` on container
+- Sticky hero: Fades as user scrolls
+- Other sections: Fade in naturally as they enter viewport
+- Avoid overlapping sticky sections
+
+## Copy Strategy
+- Focus on discipline and cost
+- "Cost of 1 Dollar vs. the Cost of the Habit"
+- Direct, no-nonsense language
+- Uppercase for emphasis: "MAKE THE COMMITMENT"
+- Short, impactful sentences
+
+## Accessibility
+- Maintain proper heading hierarchy (h1, h2, etc.)
+- Use semantic HTML elements
+- Ensure sufficient color contrast
+- Add proper ARIA labels for interactive elements
+
+## Performance
+- Use Next.js Image component for images
+- Lazy load animations with `useInView`
+- Optimize Framer Motion animations
+- Keep bundle size minimal
+
+## Mobile Considerations
+- Test all layouts on mobile viewport (390px width)
+- Ensure text is readable at all sizes
+- Buttons should be easily tappable
+- Prevent content overlap on small screens
+- Use responsive spacing utilities
+
+## Don'ts
+- ❌ Don't use rounded corners
+- ❌ Don't use multiple accent colors (only crimson)
+- ❌ Don't add unnecessary animations
+- ❌ Don't use gradients for UI elements
+- ❌ Don't create complex navigation
+- ❌ Don't use sans-serif fonts (monospace only)
+- ❌ Don't add border-radius to buttons or cards
+- ❌ Don't overlap sticky sections
+
+## Do's
+- ✅ Use monospace font throughout
+- ✅ Maintain brutalist aesthetic
+- ✅ Use crimson sparingly for critical actions
+- ✅ Keep layouts simple and focused
+- ✅ Use smooth scroll animations
+- ✅ Ensure proper mobile spacing
+- ✅ Use sharp, heavy borders
+- ✅ Maintain high contrast
+
+## Authentication & Authorization
+
+### Stack
+- **Auth Provider**: Supabase Auth
+- **Database**: Supabase Postgres
+- **ORM**: Prisma
+- **Validation**: Zod
+
+### Authentication Patterns (Following Next.js Best Practices)
+Reference: https://nextjs.org/docs/app/guides/authentication
+
+#### Data Access Layer (DAL)
+- Use `src/lib/dal.ts` for session verification
+- `verifySession()` - cached function to check auth state
+- `requireAuth()` - redirects to login if not authenticated
+- Always use DAL in Server Components, Server Actions, Route Handlers
+
+#### Important: Auth Checks
+- ❌ **DON'T** check auth in layouts (they don't re-render on navigation)
+- ✅ **DO** check auth in page components using `requireAuth()` or `verifySession()`
+- ✅ **DO** check auth in Server Actions before mutations
+- ✅ **DO** check auth in Route Handlers
+
+#### Middleware
+- Use middleware for optimistic checks and session refresh
+- Redirect unauthenticated users from protected routes
+- Redirect authenticated users away from login/register pages
+
+#### Public Routes
+- `/` - Landing page
+- `/login` - Login page
+- `/register` - Registration page
+- `/auth/callback` - OAuth callback
+
+#### Protected Routes
+- `/dashboard` - Main dashboard (requires auth)
+- All other routes except public ones
+
+### File Structure for Auth
+```
+src/
+├── app/
+│   ├── (auth)/           # Auth pages (login, register)
+│   │   ├── login/
+│   │   ├── register/
+│   │   └── layout.tsx
+│   ├── auth/
+│   │   └── callback/     # OAuth callback route
+│   ├── dashboard/        # Protected dashboard
+│   └── actions/
+│       └── auth.ts       # Server actions for auth
+├── lib/
+│   ├── dal.ts            # Data Access Layer
+│   ├── definitions.ts    # Zod schemas & types
+│   ├── prisma.ts         # Prisma client
+│   └── supabase/
+│       ├── client.ts     # Browser client
+│       ├── server.ts     # Server client
+│       └── middleware.ts # Session management
+└── middleware.ts         # Route protection
+```
+
+### Form Validation
+- Use Zod schemas in `src/lib/definitions.ts`
+- Validate on the server in Server Actions
+- Display errors using `useActionState` hook
+- Return early if validation fails

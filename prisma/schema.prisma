@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  urges  Urge[]
+  streak Streak?
+
+  @@map("users")
+}
+
+model Urge {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  type      UrgeType @default(RESISTED)
+  note      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("urges")
+}
+
+model Streak {
+  id            String    @id @default(uuid())
+  userId        String    @unique @map("user_id")
+  currentStreak Int       @default(0) @map("current_streak")
+  longestStreak Int       @default(0) @map("longest_streak")
+  lastResetAt   DateTime? @map("last_reset_at")
+  startedAt     DateTime  @default(now()) @map("started_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("streaks")
+}
+
+enum UrgeType {
+  RESISTED
+  GAVE_IN
+}
