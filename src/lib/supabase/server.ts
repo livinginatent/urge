@@ -6,6 +6,7 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 
 export const createClient = async () => {
   const cookieStore = await cookies();
+  //er
 
   return createServerClient(supabaseUrl!, supabaseKey!, {
     cookies: {
