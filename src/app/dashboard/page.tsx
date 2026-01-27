@@ -1,4 +1,4 @@
-import type { Urge } from "@prisma/client";
+import type { Urge } from "../../../generated/prisma/client";
 import { requireAuth } from "@/lib/dal";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
