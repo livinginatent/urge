@@ -1,3 +1,4 @@
+import type { Urge } from "@prisma/client";
 import { requireAuth } from "@/lib/dal";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ export default async function DashboardPage() {
   });
 
   const streak = user?.streak;
-  const recentUrges = user?.urges || [];
+  const recentUrges: Urge[] = user?.urges ?? [];
 
   // Calculate streak in seconds (for display)
   const streakSeconds = streak?.currentStreak

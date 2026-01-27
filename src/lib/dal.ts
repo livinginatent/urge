@@ -7,18 +7,18 @@ import { redirect } from "next/navigation";
 /**
  * Data Access Layer (DAL) for authentication
  * Following Next.js best practices: https://nextjs.org/docs/app/guides/authentication
- * 
+ *
  * Use this to verify sessions in:
  * - Server Components
  * - Server Actions
  * - Route Handlers
- * 
+ *
  * DO NOT use in layouts for auth checks (they don't re-render on navigation)
  */
 
 export const verifySession = cache(async () => {
   const supabase = await createClient();
-  
+
   const {
     data: { user },
     error,
@@ -37,14 +37,16 @@ export const verifySession = cache(async () => {
 
 export const getUser = cache(async () => {
   const session = await verifySession();
-  
+
   if (!session) {
     return null;
   }
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return user;
 });
 
@@ -54,10 +56,10 @@ export const getUser = cache(async () => {
  */
 export async function requireAuth() {
   const session = await verifySession();
-  
+
   if (!session) {
     redirect("/login");
   }
-  
+
   return session;
 }
