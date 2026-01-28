@@ -61,7 +61,7 @@ export default async function DashboardPage() {
             </Button>
           </form>
           <Button variant="commitment" size="lg" asChild>
-            <Link
+            <a
               href={
                 process.env.NEXT_PUBLIC_DODO_PAYMENTS_PRODUCT_ID
                   ? `/checkout?productId=${process.env.NEXT_PUBLIC_DODO_PAYMENTS_PRODUCT_ID}`
@@ -69,7 +69,7 @@ export default async function DashboardPage() {
               }
             >
               SUBSCRIBE
-            </Link>
+            </a>
           </Button>
         </div>
 
