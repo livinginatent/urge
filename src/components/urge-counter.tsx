@@ -1,13 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface UrgeCounterProps {
   label?: string;
   startFrom?: number;
   countUp?: boolean;
   showMilliseconds?: boolean;
+  showDaysMonths?: boolean;
+  autoStart?: boolean;
+  onStart?: () => Promise<void>;
 }
 
 export function UrgeCounter({
@@ -15,42 +19,80 @@ export function UrgeCounter({
   startFrom = 0,
   countUp = true,
   showMilliseconds = true,
+  showDaysMonths = false,
+  autoStart = true,
+  onStart,
 }: UrgeCounterProps) {
   const [time, setTime] = useState(startFrom);
+  const [isRunning, setIsRunning] = useState(autoStart);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
+    if (!isRunning) return;
+
     const interval = setInterval(() => {
       setTime((prev) => (countUp ? prev + 1 : Math.max(0, prev - 1)));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [countUp]);
+  }, [countUp, isRunning]);
 
   const formatTime = (totalSeconds: number) => {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
+    const secondsInMinute = 60;
+    const secondsInHour = 60 * secondsInMinute;
+    const secondsInDay = 24 * secondsInHour;
+    const secondsInMonth = 30 * secondsInDay; // approximate 30-day month
+
+    const months = Math.floor(totalSeconds / secondsInMonth);
+    const days = Math.floor(
+      (totalSeconds % secondsInMonth) / secondsInDay,
+    );
+    const hours = Math.floor(
+      (totalSeconds % secondsInDay) / secondsInHour,
+    );
+    const minutes = Math.floor(
+      (totalSeconds % secondsInHour) / secondsInMinute,
+    );
+    const seconds = totalSeconds % secondsInMinute;
 
     return {
+      months,
+      days,
       hours: hours.toString().padStart(2, "0"),
       minutes: minutes.toString().padStart(2, "0"),
       seconds: seconds.toString().padStart(2, "0"),
     };
   };
 
-  const { hours, minutes, seconds } = formatTime(time);
+  const { months, days, hours, minutes, seconds } = formatTime(time);
 
   const [milliseconds, setMilliseconds] = useState(0);
 
   useEffect(() => {
-    if (!showMilliseconds) return;
+    if (!showMilliseconds || !isRunning) return;
     
     const msInterval = setInterval(() => {
       setMilliseconds((prev) => (prev + 1) % 100);
     }, 10);
 
     return () => clearInterval(msInterval);
-  }, [showMilliseconds]);
+  }, [showMilliseconds, isRunning]);
+
+  const handleStart = () => {
+    if (isRunning || !onStart) {
+      setIsRunning(true);
+      return;
+    }
+
+    startTransition(async () => {
+      try {
+        await onStart();
+        setIsRunning(true);
+      } catch (error) {
+        console.error("[UrgeCounter] Failed to start streak", error);
+      }
+    });
+  };
 
   return (
     <motion.div
@@ -71,6 +113,40 @@ export function UrgeCounter({
         
         {/* Main counter */}
         <div className="relative flex items-baseline gap-1 font-mono">
+          {/* Months (only show if enabled and > 0) */}
+          {showDaysMonths && months > 0 && (
+            <div className="flex flex-col items-center mr-2">
+              <motion.span
+                key={`m-${months}`}
+                initial={{ opacity: 0.5, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-3xl md:text-4xl lg:text-5xl font-bold text-white counter-digit tracking-tighter"
+              >
+                {months}
+              </motion.span>
+              <span className="text-[10px] text-[#52525b] tracking-widest mt-1">
+                MO
+              </span>
+            </div>
+          )}
+
+          {/* Days (only show if enabled and > 0 or we have months) */}
+          {showDaysMonths && (months > 0 || days > 0) && (
+            <div className="flex flex-col items-center mr-4">
+              <motion.span
+                key={`d-${days}`}
+                initial={{ opacity: 0.5, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-3xl md:text-4xl lg:text-5xl font-bold text-white counter-digit tracking-tighter"
+              >
+                {days.toString().padStart(2, "0")}
+              </motion.span>
+              <span className="text-[10px] text-[#52525b] tracking-widest mt-1">
+                DAYS
+              </span>
+            </div>
+          )}
+
           {/* Hours */}
           <div className="flex flex-col items-center">
             <motion.span
@@ -128,13 +204,36 @@ export function UrgeCounter({
         </div>
       </div>
 
-      {/* Status indicator */}
-      <div className="flex items-center gap-2 mt-2">
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E11D48] opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E11D48]"></span>
-        </span>
-        <span className="text-[10px] text-[#52525b] tracking-widest uppercase">Active</span>
+      {/* Status / Controls */}
+      <div className="flex flex-col items-center gap-3 mt-4">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            {isRunning && (
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E11D48] opacity-75" />
+            )}
+            <span
+              className={`relative inline-flex rounded-full h-2 w-2 ${
+                isRunning ? "bg-[#E11D48]" : "bg-[#27272a]"
+              }`}
+            />
+          </span>
+          <span className="text-[10px] text-[#52525b] tracking-widest uppercase">
+            {isRunning ? "ACTIVE" : "PAUSED"}
+          </span>
+        </div>
+
+        {!isRunning && (
+          <Button
+            type="button"
+            variant="commitment"
+            size="lg"
+            className="px-8"
+            onClick={handleStart}
+            disabled={isPending}
+          >
+            {isPending ? "STARTING..." : "START MY STREAK"}
+          </Button>
+        )}
       </div>
     </motion.div>
   );

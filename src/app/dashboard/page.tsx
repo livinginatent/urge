@@ -1,6 +1,8 @@
-import type { Urge } from "@prisma/client";
+import type { Relapse } from "@prisma/client";
 import { requireAuth } from "@/lib/dal";
 import { prisma } from "@/lib/prisma";
+import { getSubscriptionInfo } from "@/lib/subscription";
+import { startStreak } from "@/app/actions/streak";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { UrgeCounter } from "@/components/urge-counter";
@@ -9,12 +11,12 @@ export default async function DashboardPage() {
   // This will redirect to /login?redirect=/dashboard if not authenticated
   const session = await requireAuth("/dashboard");
 
-  // Fetch user data including subscription info
+  // Fetch user data including relapses
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
     include: {
       streak: true,
-      urges: {
+      relapses: {
         orderBy: { createdAt: "desc" },
         take: 5,
       },
@@ -22,25 +24,42 @@ export default async function DashboardPage() {
   });
 
   const streak = user?.streak;
-  const recentUrges: Urge[] = user?.urges ?? [];
-
-  // Calculate streak in seconds (for display)
-  const streakSeconds = streak?.currentStreak
-    ? streak.currentStreak * 24 * 60 * 60
-    : 0;
-
-  // Subscription status
-  const hasActiveSubscription =
-    user?.isPaidUser ||
-    user?.subscriptionStatus === "TRIALING" ||
-    user?.subscriptionStatus === "ACTIVE";
-
-  const isTrialing = user?.subscriptionStatus === "TRIALING";
+  const recentRelapses: Relapse[] = user?.relapses ?? [];
   
-  // Calculate trial days remaining (computed on server)
-  const trialDaysRemaining = user?.trialEndsAt
-    ? Math.max(0, Math.ceil((user.trialEndsAt.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
-    : null;
+  // Get total relapse count
+  const totalRelapses = await prisma.relapse.count({
+    where: { userId: session.userId },
+  });
+
+  // Calculate streak seconds from startedAt (fallback to days if missing)
+  const now = new Date();
+  const streakSeconds = streak?.startedAt
+    ? Math.max(0, Math.floor((now.getTime() - streak.startedAt.getTime()) / 1000))
+    : streak?.currentStreak
+      ? streak.currentStreak * 24 * 60 * 60
+      : 0;
+
+  // Keep currentStreak (days) in sync if startedAt exists
+  if (streak?.startedAt) {
+    const computedDays = Math.floor(streakSeconds / (24 * 60 * 60));
+    if (computedDays !== streak.currentStreak) {
+      await prisma.streak.update({
+        where: { userId: session.userId },
+        data: { currentStreak: computedDays },
+      });
+    }
+  }
+
+  // Subscription info (reused logic)
+  const subscriptionInfo = await getSubscriptionInfo(session.userId);
+
+  const hasActiveSubscription =
+    subscriptionInfo?.isPaidUser ||
+    subscriptionInfo?.subscriptionStatus === "TRIALING" ||
+    subscriptionInfo?.subscriptionStatus === "ACTIVE";
+
+  const isTrialing = subscriptionInfo?.subscriptionStatus === "TRIALING";
+  const trialDaysRemaining = subscriptionInfo?.trialDaysRemaining ?? null;
 
   return (
     <div className="min-h-screen bg-[#050505] pt-24 pb-12 px-6">
@@ -91,17 +110,18 @@ export default async function DashboardPage() {
         {/* Main Counter */}
         <Card className="mb-8">
           <CardContent className="py-12">
-            <UrgeCounter startFrom={streakSeconds} label="CURRENT STREAK" />
+            <UrgeCounter
+              startFrom={streakSeconds}
+              label={streakSeconds > 0 ? "CURRENT STREAK" : "START MY STREAK"}
+              autoStart={streakSeconds > 0}
+              showDaysMonths
+              onStart={startStreak}
+            />
           </CardContent>
         </Card>
 
         {/* Action Buttons */}
         <div className="flex flex-wrap justify-center gap-4 mb-12">
-          <form action="/api/urge/resist" method="POST">
-            <Button variant="outline" size="lg" type="submit">
-              I HELD STRONG
-            </Button>
-          </form>
           <form action="/api/urge/gave-in" method="POST">
             <Button variant="destructive" size="lg" type="submit">
               I GAVE IN
@@ -136,43 +156,39 @@ export default async function DashboardPage() {
           <Card>
             <CardHeader>
               <CardDescription className="text-xs uppercase tracking-widest">
-                Total Logged
+                Total Relapses
               </CardDescription>
               <CardTitle className="text-4xl text-white">
-                {recentUrges.length} <span className="text-lg text-[#52525b]">urges</span>
+                {totalRelapses} <span className="text-lg text-[#52525b]">times</span>
               </CardTitle>
             </CardHeader>
           </Card>
         </div>
 
-        {/* Recent Activity */}
+        {/* Relapse History */}
         <Card>
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Your latest logged urges</CardDescription>
+            <CardTitle>Relapse History</CardTitle>
+            <CardDescription>Your journey back to strength</CardDescription>
           </CardHeader>
           <CardContent>
-            {recentUrges.length === 0 ? (
-              <p className="text-[#52525b] text-sm">No activity yet. Start tracking your urges.</p>
+            {recentRelapses.length === 0 ? (
+              <p className="text-[#52525b] text-sm">No relapses yet. Keep your streak going!</p>
             ) : (
               <ul className="space-y-3">
-                {recentUrges.map((urge) => (
+                {recentRelapses.map((relapse) => (
                   <li
-                    key={urge.id}
+                    key={relapse.id}
                     className="flex items-center justify-between py-3 border-b border-[#27272a] last:border-0"
                   >
                     <div className="flex items-center gap-3">
-                      <span
-                        className={`w-2 h-2 ${
-                          urge.type === "RESISTED" ? "bg-green-500" : "bg-[#E11D48]"
-                        }`}
-                      />
+                      <span className="w-2 h-2 bg-[#E11D48]" />
                       <span className="text-[#a1a1aa] text-sm">
-                        {urge.type === "RESISTED" ? "Resisted" : "Gave in"}
+                        Lost {relapse.streakDays} day{relapse.streakDays !== 1 ? "s" : ""} streak
                       </span>
                     </div>
                     <span className="text-[#52525b] text-xs">
-                      {new Date(urge.createdAt).toLocaleDateString()}
+                      {new Date(relapse.createdAt).toLocaleDateString()}
                     </span>
                   </li>
                 ))}

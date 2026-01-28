@@ -27,8 +27,9 @@ model User {
   subscriptionEndsAt DateTime?          @map("subscription_ends_at")
 
   // Relations
-  urges  Urge[]
-  streak Streak?
+  urges    Urge[]
+  streak   Streak?
+  relapses Relapse[]
 
   @@map("users")
 }
@@ -61,13 +62,27 @@ model Streak {
   currentStreak Int       @default(0) @map("current_streak")
   longestStreak Int       @default(0) @map("longest_streak")
   lastResetAt   DateTime? @map("last_reset_at")
-  startedAt     DateTime  @default(now()) @map("started_at")
+  startedAt     DateTime? @map("started_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("streaks")
+}
+
+model Relapse {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  streakDays   Int      @map("streak_days") // How many days the streak was before relapse
+  streakStart  DateTime? @map("streak_start") // When the streak started
+  note         String?  // Optional note about the relapse
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("relapses")
 }
 
 enum UrgeType {
