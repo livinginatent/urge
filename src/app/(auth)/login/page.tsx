@@ -4,7 +4,15 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { login } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { PasswordInput } from "@/components/ui/password-input";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 
 export default function LoginPage() {
   const [state, action, pending] = useActionState(login, undefined);
@@ -25,42 +33,60 @@ export default function LoginPage() {
           <CardContent className="space-y-6">
             {/* Error message */}
             {state?.message && (
-              <div className="p-3 border-2 border-[#E11D48] bg-[#E11D48]/10 text-[#E11D48] text-sm">
+              <div className="p-3 border-2 border-[#E11D48] bg-[#E11D48]/10 text-[#E11D48] text-sm font-mono">
                 {state.message}
               </div>
             )}
 
             {/* Email */}
             <div className="space-y-2">
-              <label htmlFor="email" className="text-[#a1a1aa] text-xs uppercase tracking-widest">
+              <label
+                htmlFor="email"
+                className="text-[#a1a1aa] text-xs uppercase tracking-widest"
+              >
                 Email
               </label>
               <input
                 id="email"
                 name="email"
                 type="email"
+                autoComplete="email"
                 placeholder="you@example.com"
                 className="w-full h-12 px-4 bg-[#0a0a0a] border-2 border-[#27272a] text-white font-mono placeholder:text-[#52525b] focus:border-[#E11D48] focus:outline-none transition-colors"
               />
               {state?.errors?.email && (
-                <p className="text-[#E11D48] text-xs">{state.errors.email[0]}</p>
+                <p className="text-[#E11D48] text-xs font-mono">
+                  {state.errors.email[0]}
+                </p>
               )}
             </div>
 
             {/* Password */}
             <div className="space-y-2">
-              <label htmlFor="password" className="text-[#a1a1aa] text-xs uppercase tracking-widest">
-                Password
-              </label>
-              <input
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor="password"
+                  className="text-[#a1a1aa] text-xs uppercase tracking-widest"
+                >
+                  Password
+                </label>
+                <Link
+                  href="/forgot-password"
+                  className="text-[#52525b] text-xs hover:text-[#E11D48] transition-colors"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+              <PasswordInput
                 id="password"
                 name="password"
-                type="password"
+                autoComplete="current-password"
                 placeholder="••••••••"
-                className="w-full h-12 px-4 bg-[#0a0a0a] border-2 border-[#27272a] text-white font-mono placeholder:text-[#52525b] focus:border-[#E11D48] focus:outline-none transition-colors"
               />
               {state?.errors?.password && (
-                <p className="text-[#E11D48] text-xs">{state.errors.password[0]}</p>
+                <p className="text-[#E11D48] text-xs font-mono">
+                  {state.errors.password[0]}
+                </p>
               )}
             </div>
           </CardContent>

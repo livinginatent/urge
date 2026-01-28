@@ -4,7 +4,15 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { register } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { PasswordInput } from "@/components/ui/password-input";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 
 export default function RegisterPage() {
   const [state, action, pending] = useActionState(register, undefined);
@@ -25,59 +33,73 @@ export default function RegisterPage() {
           <CardContent className="space-y-6">
             {/* Error message */}
             {state?.message && (
-              <div className="p-3 border-2 border-[#E11D48] bg-[#E11D48]/10 text-[#E11D48] text-sm">
+              <div className="p-3 border-2 border-[#E11D48] bg-[#E11D48]/10 text-[#E11D48] text-sm font-mono">
                 {state.message}
               </div>
             )}
 
-            {/* Name */}
+            {/* Username */}
             <div className="space-y-2">
-              <label htmlFor="name" className="text-[#a1a1aa] text-xs uppercase tracking-widest">
-                Name
+              <label
+                htmlFor="username"
+                className="text-[#a1a1aa] text-xs uppercase tracking-widest"
+              >
+                Username
               </label>
               <input
-                id="name"
-                name="name"
+                id="username"
+                name="username"
                 type="text"
-                placeholder="Your name"
+                autoComplete="username"
+                placeholder="your_username"
                 className="w-full h-12 px-4 bg-[#0a0a0a] border-2 border-[#27272a] text-white font-mono placeholder:text-[#52525b] focus:border-[#E11D48] focus:outline-none transition-colors"
               />
-              {state?.errors?.name && (
-                <p className="text-[#E11D48] text-xs">{state.errors.name[0]}</p>
+              {state?.errors?.username && (
+                <p className="text-[#E11D48] text-xs font-mono">
+                  {state.errors.username[0]}
+                </p>
               )}
             </div>
 
             {/* Email */}
             <div className="space-y-2">
-              <label htmlFor="email" className="text-[#a1a1aa] text-xs uppercase tracking-widest">
+              <label
+                htmlFor="email"
+                className="text-[#a1a1aa] text-xs uppercase tracking-widest"
+              >
                 Email
               </label>
               <input
                 id="email"
                 name="email"
                 type="email"
+                autoComplete="email"
                 placeholder="you@example.com"
                 className="w-full h-12 px-4 bg-[#0a0a0a] border-2 border-[#27272a] text-white font-mono placeholder:text-[#52525b] focus:border-[#E11D48] focus:outline-none transition-colors"
               />
               {state?.errors?.email && (
-                <p className="text-[#E11D48] text-xs">{state.errors.email[0]}</p>
+                <p className="text-[#E11D48] text-xs font-mono">
+                  {state.errors.email[0]}
+                </p>
               )}
             </div>
 
             {/* Password */}
             <div className="space-y-2">
-              <label htmlFor="password" className="text-[#a1a1aa] text-xs uppercase tracking-widest">
+              <label
+                htmlFor="password"
+                className="text-[#a1a1aa] text-xs uppercase tracking-widest"
+              >
                 Password
               </label>
-              <input
+              <PasswordInput
                 id="password"
                 name="password"
-                type="password"
+                autoComplete="new-password"
                 placeholder="Min. 8 characters"
-                className="w-full h-12 px-4 bg-[#0a0a0a] border-2 border-[#27272a] text-white font-mono placeholder:text-[#52525b] focus:border-[#E11D48] focus:outline-none transition-colors"
               />
               {state?.errors?.password && (
-                <div className="text-[#E11D48] text-xs space-y-1">
+                <div className="text-[#E11D48] text-xs font-mono space-y-1">
                   {state.errors.password.map((error) => (
                     <p key={error}>• {error}</p>
                   ))}
@@ -87,18 +109,22 @@ export default function RegisterPage() {
 
             {/* Confirm Password */}
             <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="text-[#a1a1aa] text-xs uppercase tracking-widest">
+              <label
+                htmlFor="confirmPassword"
+                className="text-[#a1a1aa] text-xs uppercase tracking-widest"
+              >
                 Confirm Password
               </label>
-              <input
+              <PasswordInput
                 id="confirmPassword"
                 name="confirmPassword"
-                type="password"
+                autoComplete="new-password"
                 placeholder="Confirm your password"
-                className="w-full h-12 px-4 bg-[#0a0a0a] border-2 border-[#27272a] text-white font-mono placeholder:text-[#52525b] focus:border-[#E11D48] focus:outline-none transition-colors"
               />
               {state?.errors?.confirmPassword && (
-                <p className="text-[#E11D48] text-xs">{state.errors.confirmPassword[0]}</p>
+                <p className="text-[#E11D48] text-xs font-mono">
+                  {state.errors.confirmPassword[0]}
+                </p>
               )}
             </div>
           </CardContent>

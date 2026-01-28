@@ -35,7 +35,7 @@ export default async function DashboardPage() {
         {/* Header */}
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-2">
-            Welcome back, <span className="text-[#E11D48]">{user?.name || "Warrior"}</span>
+            Welcome back, <span className="text-[#E11D48]">{user?.username || "Warrior"}</span>
           </h1>
           <p className="text-[#52525b]">Stay strong. Every moment counts.</p>
         </div>
