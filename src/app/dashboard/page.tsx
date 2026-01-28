@@ -61,7 +61,15 @@ export default async function DashboardPage() {
             </Button>
           </form>
           <Button variant="commitment" size="lg" asChild>
-            <Link href="/checkout">SUBSCRIBE</Link>
+            <Link
+              href={
+                process.env.NEXT_PUBLIC_DODO_PAYMENTS_PRODUCT_ID
+                  ? `/checkout?productId=${process.env.NEXT_PUBLIC_DODO_PAYMENTS_PRODUCT_ID}`
+                  : "/checkout"
+              }
+            >
+              SUBSCRIBE
+            </Link>
           </Button>
         </div>
 

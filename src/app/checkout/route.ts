@@ -7,16 +7,25 @@ const DODO_ENVIRONMENT: "test_mode" | "live_mode" | undefined =
       ? "live_mode"
       : undefined;
 
+// Prefer NEXT_PUBLIC_SITE_URL, then Vercel URL, then localhost
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
+// Allow override via env; otherwise derive dynamically from SITE_URL
+const DODO_RETURN_URL =
+  process.env.DODO_PAYMENTS_RETURN_URL || `${SITE_URL}/after-checkout`;
+
 export const GET = Checkout({
   bearerToken: process.env.DODO_PAYMENTS_API_KEY!,
-  returnUrl: process.env.DODO_PAYMENTS_RETURN_URL,
+  returnUrl: DODO_RETURN_URL,
   environment: DODO_ENVIRONMENT,
   type: "static",
 });
 
 export const POST = Checkout({
   bearerToken: process.env.DODO_PAYMENTS_API_KEY!,
-  returnUrl: process.env.DODO_PAYMENTS_RETURN_URL,
+  returnUrl: DODO_RETURN_URL,
   environment: DODO_ENVIRONMENT,
   // Recommended: use "session" for flexible one-time and subscription flows
   type: "session", // or "dynamic" for dynamic link, or "static" if you prefer
