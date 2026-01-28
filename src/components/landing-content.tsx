@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { UrgeCounter } from "@/components/urge-counter";
 import { SiteFooter } from "@/components/site-footer";
+import Link from "next/link";
+
+type SubscriptionInfo = {
+  isPaidUser: boolean;
+  subscriptionStatus: string;
+  trialDaysRemaining: number | null;
+} | null;
 
 function FadeInSection({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -24,7 +31,11 @@ function FadeInSection({ children, className = "" }: { children: React.ReactNode
   );
 }
 
-export function LandingContent() {
+interface LandingContentProps {
+  subscriptionInfo?: SubscriptionInfo;
+}
+
+export function LandingContent({ subscriptionInfo }: LandingContentProps) {
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -33,6 +44,15 @@ export function LandingContent() {
 
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 0.8], [1, 0.95]);
+
+  // Check if user has an active subscription (paid or trialing)
+  const hasActiveSubscription =
+    subscriptionInfo?.isPaidUser ||
+    subscriptionInfo?.subscriptionStatus === "TRIALING" ||
+    subscriptionInfo?.subscriptionStatus === "ACTIVE";
+
+  // Trial days remaining (computed on server, passed as prop)
+  const trialDaysRemaining = subscriptionInfo?.trialDaysRemaining ?? null;
 
   return (
     <>
@@ -222,12 +242,34 @@ export function LandingContent() {
               </CardContent>
               
               <CardFooter className="flex-col gap-4 border-t-0 pt-0">
-                <Button variant="commitment" size="xl" className="w-full" asChild>
-                  <a href="/subscribe">MAKE THE COMMITMENT</a>
-                </Button>
-                <p className="text-[10px] text-[#52525b] text-center">
-                  Cancel anytime. But why would you?
-                </p>
+                {hasActiveSubscription ? (
+                  <>
+                    <div className="w-full p-4 border-2 border-[#27272a] bg-[#0a0a0a] text-center">
+                      <p className="text-[#E11D48] font-bold text-sm uppercase tracking-widest mb-1">
+                        {subscriptionInfo?.subscriptionStatus === "TRIALING"
+                          ? "FREE TRIAL ACTIVE"
+                          : "YOU'RE COMMITTED"}
+                      </p>
+                      {subscriptionInfo?.subscriptionStatus === "TRIALING" && trialDaysRemaining !== null && (
+                        <p className="text-[#52525b] text-xs">
+                          {trialDaysRemaining} day{trialDaysRemaining !== 1 ? "s" : ""} remaining
+                        </p>
+                      )}
+                    </div>
+                    <Button variant="outline" size="lg" className="w-full" asChild>
+                      <Link href="/dashboard">GO TO DASHBOARD</Link>
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="commitment" size="xl" className="w-full" asChild>
+                      <a href="/subscribe">MAKE THE COMMITMENT</a>
+                    </Button>
+                    <p className="text-[10px] text-[#52525b] text-center">
+                      30-day free trial. Cancel anytime.
+                    </p>
+                  </>
+                )}
               </CardFooter>
             </Card>
 

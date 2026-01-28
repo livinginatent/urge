@@ -19,11 +19,27 @@ model User {
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
 
+  // Subscription fields
+  isPaidUser         Boolean            @default(false) @map("is_paid_user")
+  subscriptionStatus SubscriptionStatus @default(NONE) @map("subscription_status")
+  subscriptionId     String?            @unique @map("subscription_id")
+  trialEndsAt        DateTime?          @map("trial_ends_at")
+  subscriptionEndsAt DateTime?          @map("subscription_ends_at")
+
   // Relations
   urges  Urge[]
   streak Streak?
 
   @@map("users")
+}
+
+enum SubscriptionStatus {
+  NONE       // No subscription
+  TRIALING   // In free trial period
+  ACTIVE     // Paid and active
+  ON_HOLD    // Payment failed, grace period
+  CANCELLED  // Cancelled but still active until period ends
+  EXPIRED    // Subscription ended
 }
 
 model Urge {
