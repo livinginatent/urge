@@ -1,7 +1,6 @@
 import type { Relapse } from "@prisma/client";
 import { requireAuth } from "@/lib/dal";
 import { prisma } from "@/lib/prisma";
-import { getSubscriptionInfo } from "@/lib/subscription";
 import { startStreak } from "@/app/actions/streak";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -50,16 +49,23 @@ export default async function DashboardPage() {
     }
   }
 
-  // Subscription info (reused logic)
-  const subscriptionInfo = await getSubscriptionInfo(session.userId);
-
+  // Subscription info (derived directly from user – avoid extra queries)
   const hasActiveSubscription =
-    subscriptionInfo?.isPaidUser ||
-    subscriptionInfo?.subscriptionStatus === "TRIALING" ||
-    subscriptionInfo?.subscriptionStatus === "ACTIVE";
+    user?.isPaidUser ||
+    user?.subscriptionStatus === "TRIALING" ||
+    user?.subscriptionStatus === "ACTIVE";
 
-  const isTrialing = subscriptionInfo?.subscriptionStatus === "TRIALING";
-  const trialDaysRemaining = subscriptionInfo?.trialDaysRemaining ?? null;
+  const isTrialing = user?.subscriptionStatus === "TRIALING";
+
+  const trialDaysRemaining = user?.trialEndsAt
+    ? Math.max(
+        0,
+        Math.ceil(
+          (user.trialEndsAt.getTime() - now.getTime()) /
+            (1000 * 60 * 60 * 24),
+        ),
+      )
+    : null;
 
   return (
     <div className="min-h-screen bg-[#050505] pt-24 pb-12 px-6">
@@ -121,13 +127,15 @@ export default async function DashboardPage() {
         </Card>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
-          <form action="/api/urge/gave-in" method="POST">
-            <Button variant="destructive" size="lg" type="submit">
-              I GAVE IN
-            </Button>
-          </form>
-        </div>
+        {streakSeconds > 0 && (
+          <div className="flex flex-wrap justify-center gap-4 mb-12">
+            <form action="/api/urge/gave-in" method="POST">
+              <Button variant="destructive" size="lg" type="submit">
+                I GAVE IN
+              </Button>
+            </form>
+          </div>
+        )}
 
         {/* Stats Grid */}
         <div className="grid md:grid-cols-3 gap-4 mb-12">
