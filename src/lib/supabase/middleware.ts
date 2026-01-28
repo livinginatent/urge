@@ -52,12 +52,13 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Redirect unauthenticated users from protected routes
-  // Public routes that don't require auth:
+  // Public routes that don't require auth (middleware passes through):
   // - / (landing page)
   // - /login, /register, /forgot-password, /reset-password (auth pages)
   // - /auth/* (OAuth callbacks)
   // - /api/* (API routes including webhooks)
   // - /checkout/* (payment routes)
+  // - /subscribe (handles its own auth check via requireAuth)
   if (
     !user &&
     !request.nextUrl.pathname.startsWith("/login") &&
@@ -67,6 +68,7 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith("/auth") &&
     !request.nextUrl.pathname.startsWith("/api") &&
     !request.nextUrl.pathname.startsWith("/checkout") &&
+    !request.nextUrl.pathname.startsWith("/subscribe") &&
     request.nextUrl.pathname !== "/"
   ) {
     const url = request.nextUrl.clone();
