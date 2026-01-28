@@ -1,16 +1,9 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { requireAuth } from "@/lib/dal";
 
 const DODO_ENVIRONMENT: "test_mode" | "live_mode" =
   process.env.DODO_PAYMENTS_ENVIRONMENT === "live_mode" ? "live_mode" : "test_mode";
-
-// Prefer NEXT_PUBLIC_SITE_URL, then Vercel URL, then localhost
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-
-const DODO_RETURN_URL =
-  process.env.DODO_PAYMENTS_RETURN_URL || `${SITE_URL}/dashboard`;
 
 const DODO_PRODUCT_ID = process.env.NEXT_PUBLIC_DODO_PAYMENTS_PRODUCT_ID;
 
@@ -39,8 +32,16 @@ export default async function SubscribePage() {
     );
   }
 
+  // Get the current host from request headers to build return URL
+  const headersList = await headers();
+  const host = headersList.get("host") || "localhost:3000";
+  const protocol = headersList.get("x-forwarded-proto") || "https";
+
+  // Build return URL dynamically from current request
+  const returnUrl =
+    process.env.DODO_PAYMENTS_RETURN_URL || `${protocol}://${host}/dashboard`;
+
   // Build the Dodo checkout URL directly
-  // For static checkout, we can construct the URL ourselves
   const baseUrl =
     DODO_ENVIRONMENT === "test_mode"
       ? "https://test.checkout.dodopayments.com"
@@ -48,7 +49,7 @@ export default async function SubscribePage() {
 
   const checkoutUrl = new URL(`/buy/${DODO_PRODUCT_ID}`, baseUrl);
   checkoutUrl.searchParams.set("quantity", "1");
-  checkoutUrl.searchParams.set("redirect_url", DODO_RETURN_URL);
+  checkoutUrl.searchParams.set("redirect_url", returnUrl);
 
   // Optionally pre-fill email if available
   if (session.email) {
