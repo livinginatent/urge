@@ -5,6 +5,7 @@ import { startStreak } from "@/app/actions/streak";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { UrgeCounter } from "@/components/urge-counter";
+import { CircuitBreaker } from "@/components/CircuitBreaker";
 
 export default async function DashboardPage() {
   // This will redirect to /login?redirect=/dashboard if not authenticated
@@ -172,6 +173,11 @@ export default async function DashboardPage() {
             </CardHeader>
           </Card>
         </div>
+
+        {/* Help My Urge Button */}
+       
+    <CircuitBreaker/>
+    
 
         {/* Relapse History */}
         <Card>

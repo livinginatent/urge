@@ -9,12 +9,15 @@ export async function NavBar() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-[#27272a] bg-[#050505]/95 backdrop-blur">
-      <div className="max-w-5xl mx-auto flex items-center justify-between px-6 py-4">
-        <Link href="/" className="text-white font-bold text-sm tracking-[0.3em] uppercase hover:text-[#E11D48] transition-colors">
+      <div className="max-w-5xl mx-auto flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3 sm:py-4">
+        <Link
+          href="/"
+          className="text-white font-bold text-xs sm:text-sm tracking-[0.3em] uppercase hover:text-[#E11D48] transition-colors"
+        >
           URGE
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 self-start sm:self-auto">
           {user ? (
             <>
               <Button
