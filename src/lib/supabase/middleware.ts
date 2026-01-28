@@ -38,13 +38,16 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Redirect authenticated users away from auth pages
+  // Respect the `redirect` query param if present (e.g., /login?redirect=/subscribe)
   if (
     user &&
     (request.nextUrl.pathname.startsWith("/login") ||
       request.nextUrl.pathname.startsWith("/register"))
   ) {
+    const redirectTo = request.nextUrl.searchParams.get("redirect");
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = redirectTo || "/dashboard";
+    url.search = ""; // Clear query params (including the redirect param itself)
     return NextResponse.redirect(url);
   }
 
