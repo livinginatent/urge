@@ -224,7 +224,7 @@ export function LandingContent() {
               
               <CardFooter className="flex-col gap-4 border-t-0 pt-0">
                 <Button variant="commitment" size="xl" className="w-full" asChild>
-                  <Link href="/register">MAKE THE COMMITMENT</Link>
+                  <Link href="/checkout">MAKE THE COMMITMENT</Link>
                 </Button>
                 <p className="text-[10px] text-[#52525b] text-center">
                   Cancel anytime. But why would you?

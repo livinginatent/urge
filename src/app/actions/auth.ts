@@ -24,6 +24,7 @@ export async function login(
     email: formData.get("email"),
     password: formData.get("password"),
   });
+  const redirectTo = (formData.get("redirect") as string | null) || "/dashboard";
 
   // Return early if validation fails
   if (!validatedFields.success) {
@@ -47,7 +48,7 @@ export async function login(
   }
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  redirect(redirectTo || "/dashboard");
 }
 
 export async function register(
@@ -61,6 +62,7 @@ export async function register(
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
   });
+  const redirectTo = (formData.get("redirect") as string | null) || "/dashboard";
 
   // Return early if validation fails
   if (!validatedFields.success) {
@@ -128,7 +130,7 @@ export async function register(
   }
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  redirect(redirectTo || "/dashboard");
 }
 
 export async function forgotPassword(

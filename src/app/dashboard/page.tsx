@@ -3,6 +3,7 @@ import { requireAuth } from "@/lib/dal";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import Link from "next/link";
 import { UrgeCounter } from "@/components/urge-counter";
 
 export default async function DashboardPage() {
@@ -59,6 +60,9 @@ export default async function DashboardPage() {
               I GAVE IN
             </Button>
           </form>
+          <Button variant="commitment" size="lg" asChild>
+            <Link href="/checkout">SUBSCRIBE</Link>
+          </Button>
         </div>
 
         {/* Stats Grid */}
