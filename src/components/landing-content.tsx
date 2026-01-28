@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { UrgeCounter } from "@/components/urge-counter";
 import { SiteFooter } from "@/components/site-footer";
 import Link from "next/link";
+import { CircuitBreaker } from "./CircuitBreaker";
 
 type SubscriptionInfo = {
   isPaidUser: boolean;
@@ -77,7 +78,7 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
           </h1>
           
           <p className="text-[#52525b] text-lg md:text-xl max-w-xl mx-auto font-mono">
-            What you don&apos;t pay in dollars, you pay in discipline.
+            What you don&apos;t pay in dollars, you pay in regret.
           </p>
         </motion.div>
 
@@ -117,7 +118,7 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
             <p className="text-lg text-[#52525b]">
               What if giving in cost you something?
               <br />
-              <span className="text-[#E11D48] font-bold">Even just $1.</span>
+              <span className="text-[#E11D48] font-bold">Even just $2.</span>
             </p>
           </FadeInSection>
         </section>
@@ -172,27 +173,31 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
             <p className="text-[#a1a1aa] text-lg md:text-xl leading-relaxed mb-8">
               Distractions multiply. Temptations compound.
               <br />
-              <span className="text-white">Focus is the only currency that matters.</span>
+              <span className="text-white">Click and help your urge.</span>
             </p>
 
             {/* Visual mask effect */}
-            <div className="relative mx-auto w-64 h-64 md:w-80 md:h-80">
+         {/*    <div className="relative mx-auto w-64 h-64 md:w-80 md:h-80">
               <div className="absolute inset-0 bg-[#050505] rounded-full" />
               <div className="absolute inset-4 border-2 border-[#27272a] rounded-full flex items-center justify-center">
                 <div className="absolute inset-8 border border-[#27272a] rounded-full" />
                 <span className="text-6xl md:text-8xl font-bold text-[#E11D48]">1</span>
               </div>
               <div className="absolute -inset-4 border border-[#1a1a1a] rounded-full" />
-            </div>
+            </div> */}
+            <CircuitBreaker noContent={true}/>
             
             <p className="mt-8 text-[#52525b] text-sm">
-              One focus. One goal. One dollar.
+              One focus. One goal. Two dollars.
             </p>
           </FadeInSection>
         </section>
 
         {/* Section 5: The Subscription - Dead simple */}
-        <section className="min-h-screen flex flex-col items-center justify-center px-6 py-12 md:py-24">
+        <section
+          id="subscription-section"
+          className="min-h-screen flex flex-col items-center justify-center px-6 py-12 md:py-24"
+        >
           <FadeInSection className="flex flex-col items-center w-full">
             <div className="text-center mb-8 md:mb-16">
               <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-4">
@@ -207,7 +212,7 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
                   Monthly Commitment
                 </CardDescription>
                 <CardTitle className="flex items-baseline gap-1">
-                  <span className="text-6xl md:text-7xl text-[#E11D48]">$1</span>
+                  <span className="text-6xl md:text-7xl text-[#E11D48]">$2</span>
                   <span className="text-[#52525b] text-xl">/mo</span>
                 </CardTitle>
               </CardHeader>
@@ -219,10 +224,10 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
                 
                 <ul className="space-y-3 text-sm">
                   {[
-                    "Track every urge",
+                    "Fight every urge",
                     "Log every victory",
                     "Build your streak",
-                    "Face your data",
+                    "Receive harsh but needed email reminders",
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-[#a1a1aa]">
                       <span className="w-1 h-1 bg-[#E11D48]" />
@@ -279,7 +284,7 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
                 Every habit has a price. Pay it now, or pay it later.
               </p>
               <p className="text-white font-bold text-lg">
-                <span className="text-[#E11D48]">$1/month</span> is cheaper than regret.
+                <span className="text-[#E11D48]">$2/month</span> is cheaper than regret.
               </p>
             </div>
           </FadeInSection>

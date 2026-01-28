@@ -176,7 +176,7 @@ export default async function DashboardPage() {
 
         {/* Help My Urge Button */}
        
-    <CircuitBreaker/>
+    <CircuitBreaker noContent={false}/>
     
 
         {/* Relapse History */}

@@ -9,6 +9,7 @@ export default function DashboardLayout({
     <>
       <NavBar />
       {children}
+   
     </>
   );
 }

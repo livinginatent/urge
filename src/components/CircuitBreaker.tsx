@@ -40,18 +40,28 @@ const breakerVariants: Variants = {
   },
 };
 
+type CircuitBreakerProps = {
+  noContent?: boolean;
+};
 
-
-export function CircuitBreaker() {
+export function CircuitBreaker({ noContent = false }: CircuitBreakerProps) {
   const [action, setAction] = React.useState<string | null>(null);
 
   const handlePress = () => {
+    if (noContent) {
+      const target = document.getElementById("subscription-section");
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      return;
+    }
+
     const index = Math.floor(Math.random() * DISTRACTION_ACTIONS.length);
     setAction(DISTRACTION_ACTIONS[index]);
   };
 
   return (
-    <div className="mb-12 w-full bg-[#050505] flex flex-col items-center justify-center gap-6 py-10">
+    <div className="mb-12 w-full  flex flex-col items-center justify-center gap-6 py-10">
       <motion.button
         type="button"
         className="relative flex items-center justify-center w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 rounded-full border-[6px] border-[#111827] bg-[#111111] cursor-pointer select-none font-mono text-xs sm:text-sm tracking-[0.35em] text-zinc-200 uppercase shadow-[0_0_40px_rgba(0,0,0,0.9)]"
@@ -74,7 +84,7 @@ export function CircuitBreaker() {
         </span>
       </motion.button>
 
-      {action && (
+      {action && !noContent && (
         <div className="max-w-xl px-6 text-center font-mono text-sm text-[#a1a1aa]">
           <p className="mb-2 text-xl tracking-[0.28em] text-[#52525b] uppercase">
             IMMEDIATE DISTRACTION PROTOCOL
