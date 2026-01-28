@@ -7,8 +7,8 @@ import Link from "next/link";
 import { UrgeCounter } from "@/components/urge-counter";
 
 export default async function DashboardPage() {
-  // This will redirect to /login if not authenticated
-  const session = await requireAuth();
+  // This will redirect to /login?redirect=/dashboard if not authenticated
+  const session = await requireAuth("/dashboard");
 
   // Fetch user data
   const user = await prisma.user.findUnique({
@@ -61,15 +61,7 @@ export default async function DashboardPage() {
             </Button>
           </form>
           <Button variant="commitment" size="lg" asChild>
-            <a
-              href={
-                process.env.NEXT_PUBLIC_DODO_PAYMENTS_PRODUCT_ID
-                  ? `/checkout?productId=${process.env.NEXT_PUBLIC_DODO_PAYMENTS_PRODUCT_ID}`
-                  : "/checkout"
-              }
-            >
-              SUBSCRIBE
-            </a>
+            <a href="/subscribe">SUBSCRIBE</a>
           </Button>
         </div>
 

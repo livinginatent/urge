@@ -223,15 +223,7 @@ export function LandingContent() {
               
               <CardFooter className="flex-col gap-4 border-t-0 pt-0">
                 <Button variant="commitment" size="xl" className="w-full" asChild>
-                  <a
-                    href={
-                      process.env.NEXT_PUBLIC_DODO_PAYMENTS_PRODUCT_ID
-                        ? `/checkout?productId=${process.env.NEXT_PUBLIC_DODO_PAYMENTS_PRODUCT_ID}`
-                        : "/checkout"
-                    }
-                  >
-                    MAKE THE COMMITMENT
-                  </a>
+                  <a href="/subscribe">MAKE THE COMMITMENT</a>
                 </Button>
                 <p className="text-[10px] text-[#52525b] text-center">
                   Cancel anytime. But why would you?

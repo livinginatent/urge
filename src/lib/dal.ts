@@ -53,12 +53,16 @@ export const getUser = cache(async () => {
 /**
  * Require authentication - redirects to login if not authenticated
  * Use this at the top of protected pages/actions
+ * @param redirectTo - Optional path to redirect back to after login
  */
-export async function requireAuth() {
+export async function requireAuth(redirectTo?: string) {
   const session = await verifySession();
 
   if (!session) {
-    redirect("/login");
+    const loginUrl = redirectTo
+      ? `/login?redirect=${encodeURIComponent(redirectTo)}`
+      : "/login";
+    redirect(loginUrl);
   }
 
   return session;
