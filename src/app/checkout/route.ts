@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Checkout } from "@dodopayments/nextjs";
+import { verifySession } from "@/lib/dal";
 
 const DODO_ENVIRONMENT: "test_mode" | "live_mode" | undefined =
   process.env.DODO_PAYMENTS_ENVIRONMENT === "test_mode"
@@ -35,6 +36,17 @@ export const DodoSessionCheckout = Checkout({
 
 // For links/buttons, redirect the user directly to the checkout_url
 export const GET = async (request: NextRequest) => {
+  const session = await verifySession();
+
+  if (!session) {
+    const url = new URL("/login", request.url);
+    url.searchParams.set(
+      "redirect",
+      `${request.nextUrl.pathname}${request.nextUrl.search}`,
+    );
+    return NextResponse.redirect(url);
+  }
+
   const response = await DodoStaticCheckout(request);
 
   if (!response.ok) {
