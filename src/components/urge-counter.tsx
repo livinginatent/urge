@@ -27,6 +27,12 @@ export function UrgeCounter({
   const [isRunning, setIsRunning] = useState(autoStart);
   const [isPending, startTransition] = useTransition();
 
+  // Reset counter when startFrom changes (e.g., after relapse)
+  useEffect(() => {
+    setTime(startFrom);
+    setIsRunning(startFrom > 0 && autoStart);
+  }, [startFrom, autoStart]);
+
   useEffect(() => {
     if (!isRunning) return;
 

@@ -9,6 +9,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const body = await request.json().catch(() => ({}));
+  const { trigger, feeling } = body;
+
   const now = new Date();
 
   const existingStreak = await prisma.streak.findUnique({
@@ -36,6 +39,8 @@ export async function POST(request: NextRequest) {
       userId: session.userId,
       streakDays,
       streakStart: existingStreak?.startedAt,
+      trigger: trigger || null,
+      feeling: feeling || null,
     },
   });
 
@@ -59,7 +64,6 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  const redirectUrl = new URL("/dashboard", request.url);
-  return NextResponse.redirect(redirectUrl);
+  return NextResponse.json({ success: true });
 }
 

@@ -77,6 +77,8 @@ model Relapse {
   streakDays   Int      @map("streak_days") // How many days the streak was before relapse
   streakStart  DateTime? @map("streak_start") // When the streak started
   note         String?  // Optional note about the relapse
+  trigger      String?  // What triggered the relapse (pre-made or custom)
+  feeling      String?  @db.VarChar(200) // How they feel now (max 200 chars)
   createdAt    DateTime @default(now()) @map("created_at")
 
   // Relations

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { UrgeCounter } from "@/components/urge-counter";
 import { CircuitBreaker } from "@/components/CircuitBreaker";
+import { RelapseButton } from "@/components/relapse-button";
 
 export default async function DashboardPage() {
   // This will redirect to /login?redirect=/dashboard if not authenticated
@@ -118,6 +119,7 @@ export default async function DashboardPage() {
         <Card className="mb-8">
           <CardContent className="py-12">
             <UrgeCounter
+              key={streakSeconds}
               startFrom={streakSeconds}
               label={streakSeconds > 0 ? "CURRENT STREAK" : "START MY STREAK"}
               autoStart={streakSeconds > 0}
@@ -130,11 +132,7 @@ export default async function DashboardPage() {
         {/* Action Buttons */}
         {streakSeconds > 0 && (
           <div className="flex flex-wrap justify-center gap-4 mb-12">
-            <form action="/api/urge/gave-in" method="POST">
-              <Button variant="destructive" size="lg" type="submit">
-                I GAVE IN
-              </Button>
-            </form>
+            <RelapseButton />
           </div>
         )}
 
@@ -189,23 +187,45 @@ export default async function DashboardPage() {
             {recentRelapses.length === 0 ? (
               <p className="text-[#52525b] text-sm">No relapses yet. Keep your streak going!</p>
             ) : (
-              <ul className="space-y-3">
-                {recentRelapses.map((relapse) => (
-                  <li
-                    key={relapse.id}
-                    className="flex items-center justify-between py-3 border-b border-[#27272a] last:border-0"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="w-2 h-2 bg-[#E11D48]" />
-                      <span className="text-[#a1a1aa] text-sm">
-                        Lost {relapse.streakDays} day{relapse.streakDays !== 1 ? "s" : ""} streak
-                      </span>
-                    </div>
-                    <span className="text-[#52525b] text-xs">
-                      {new Date(relapse.createdAt).toLocaleDateString()}
-                    </span>
-                  </li>
-                ))}
+              <ul className="space-y-4">
+                {recentRelapses.map((relapse) => {
+                  const relapseWithDetails = relapse as Relapse & {
+                    trigger?: string | null;
+                    feeling?: string | null;
+                  };
+                  return (
+                    <li
+                      key={relapse.id}
+                      className="py-3 border-b border-[#27272a] last:border-0"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-3 flex-1">
+                          <span className="w-2 h-2 bg-[#E11D48] mt-1.5" />
+                          <div className="flex-1 space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-[#a1a1aa] text-sm">
+                                Lost {relapse.streakDays} day{relapse.streakDays !== 1 ? "s" : ""} streak
+                              </span>
+                              {relapseWithDetails.trigger && (
+                                <span className="text-[#52525b] text-xs border border-[#27272a] px-2 py-0.5">
+                                  {relapseWithDetails.trigger}
+                                </span>
+                              )}
+                            </div>
+                            {relapseWithDetails.feeling && (
+                              <p className="text-[#52525b] text-xs italic">
+                                &quot;{relapseWithDetails.feeling}&quot;
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <span className="text-[#52525b] text-xs whitespace-nowrap">
+                          {new Date(relapse.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </CardContent>
