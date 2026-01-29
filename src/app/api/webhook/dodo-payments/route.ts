@@ -21,7 +21,8 @@ export const POST = Webhooks({
     
     const data = payload.data as {
       subscription_id?: string;
-      customer?: { email?: string };
+      customer_id?: string;
+      customer?: { email?: string; customer_id?: string };
       status?: string;
       trial_end?: string;
       current_period_end?: string;
@@ -43,12 +44,16 @@ export const POST = Webhooks({
     const isTrialing = data.trial_end && new Date(data.trial_end) > new Date();
     const trialEndsAt = data.trial_end ? new Date(data.trial_end) : null;
 
+    // Extract customerId from payload
+    const customerId = data.customer_id || data.customer?.customer_id;
+
     await prisma.user.update({
       where: { id: user.id },
       data: {
         isPaidUser: true,
         subscriptionStatus: isTrialing ? SubscriptionStatus.TRIALING : SubscriptionStatus.ACTIVE,
         subscriptionId: data.subscription_id,
+        customerId: customerId || user.customerId,
         trialEndsAt: trialEndsAt,
         subscriptionEndsAt: data.current_period_end ? new Date(data.current_period_end) : null,
       },

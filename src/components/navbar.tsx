@@ -28,6 +28,14 @@ export async function NavBar() {
               >
                 <Link href="/dashboard">DASHBOARD</Link>
               </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="border-2 border-[#27272a] rounded-none px-3 text-xs tracking-[0.25em]"
+                asChild
+              >
+                <Link href="/dashboard/settings">⚙</Link>
+              </Button>
               <LogoutButton />
             </>
           ) : (

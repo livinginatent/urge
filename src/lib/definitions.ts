@@ -96,3 +96,48 @@ export type ResetPasswordFormState =
       success?: boolean;
     }
   | undefined;
+
+export const ChangePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, { message: "Current password is required." }),
+    newPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters long." })
+      .regex(/[a-zA-Z]/, {
+        message: "Password must contain at least one letter.",
+      })
+      .regex(/[0-9]/, { message: "Password must contain at least one number." })
+      .trim(),
+    confirmPassword: z.string().trim(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match.",
+    path: ["confirmPassword"],
+  });
+
+export type ChangePasswordFormState =
+  | {
+      errors?: {
+        currentPassword?: string[];
+        newPassword?: string[];
+        confirmPassword?: string[];
+      };
+      message?: string;
+      success?: boolean;
+    }
+  | undefined;
+
+export const DeleteAccountSchema = z.object({
+  confirmation: z.literal("DELETE", {
+    message: 'Type "DELETE" to confirm.',
+  }),
+});
+
+export type DeleteAccountFormState =
+  | {
+      errors?: {
+        confirmation?: string[];
+      };
+      message?: string;
+    }
+  | undefined;

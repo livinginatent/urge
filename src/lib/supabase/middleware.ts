@@ -69,6 +69,9 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith("/api") &&
     !request.nextUrl.pathname.startsWith("/checkout") &&
     !request.nextUrl.pathname.startsWith("/subscribe") &&
+    !request.nextUrl.pathname.startsWith("/terms") &&
+    !request.nextUrl.pathname.startsWith("/privacy") &&
+    !request.nextUrl.pathname.startsWith("/contact") &&
     request.nextUrl.pathname !== "/"
   ) {
     const url = request.nextUrl.clone();

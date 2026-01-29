@@ -3,16 +3,21 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { prisma } from "@/lib/prisma";
 import {
   LoginFormSchema,
   RegisterFormSchema,
   ForgotPasswordSchema,
   ResetPasswordSchema,
+  ChangePasswordSchema,
+  DeleteAccountSchema,
   type LoginFormState,
   type RegisterFormState,
   type ForgotPasswordFormState,
   type ResetPasswordFormState,
+  type ChangePasswordFormState,
+  type DeleteAccountFormState,
 } from "@/lib/definitions";
 
 export async function login(
@@ -209,4 +214,116 @@ export async function logout() {
   await supabase.auth.signOut();
   revalidatePath("/", "layout");
   redirect("/");
+}
+
+export async function changePassword(
+  state: ChangePasswordFormState,
+  formData: FormData
+): Promise<ChangePasswordFormState> {
+  const validatedFields = ChangePasswordSchema.safeParse({
+    currentPassword: formData.get("currentPassword"),
+    newPassword: formData.get("newPassword"),
+    confirmPassword: formData.get("confirmPassword"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  const { currentPassword, newPassword } = validatedFields.data;
+  const supabase = await createClient();
+
+  // Get current user
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user?.email) {
+    return { message: "Not authenticated." };
+  }
+
+  // Verify current password by attempting to sign in
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: currentPassword,
+  });
+
+  if (signInError) {
+    return {
+      errors: { currentPassword: ["Current password is incorrect."] },
+    };
+  }
+
+  // Update password
+  const { error } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (error) {
+    return { message: error.message };
+  }
+
+  return {
+    success: true,
+    message: "Password updated successfully!",
+  };
+}
+
+export async function deleteAccount(
+  state: DeleteAccountFormState,
+  formData: FormData
+): Promise<DeleteAccountFormState> {
+  const validatedFields = DeleteAccountSchema.safeParse({
+    confirmation: formData.get("confirmation"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  const supabase = await createClient();
+
+  // Get current user
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { message: "Not authenticated." };
+  }
+
+  const userId = user.id;
+
+  // Delete user data from database (cascade will handle related records)
+  // Use deleteMany to avoid errors if user doesn't exist
+  try {
+    const result = await prisma.user.deleteMany({
+      where: { id: userId },
+    });
+    
+    if (result.count === 0) {
+      console.log(`[Delete Account] User ${userId} not found in database, may have been already deleted`);
+    }
+  } catch (error) {
+    console.error("Error deleting user data:", error);
+    // Continue anyway - try to delete from Supabase Auth
+  }
+
+  // Delete user from Supabase Auth using admin client
+  try {
+    const adminClient = createAdminClient();
+    const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
+    
+    if (deleteError) {
+      console.error("Error deleting user from Supabase Auth:", deleteError);
+      // Continue anyway - database is already deleted
+    }
+  } catch (error) {
+    console.error("Error creating admin client or deleting user:", error);
+    // Continue anyway - database is already deleted
+  }
+
+  // Sign out
+  await supabase.auth.signOut();
+
+  revalidatePath("/", "layout");
+  redirect("/?deleted=true");
 }
