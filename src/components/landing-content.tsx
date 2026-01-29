@@ -99,7 +99,7 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
       </motion.section>
 
       {/* Content sections - scroll normally over hero */}
-      <div className="relative z-10 bg-[#050505]">
+      <div className="relative z-10 bg-[#050505] w-full overflow-x-hidden">
         {/* Section 2: The Friction - Focused text reveals */}
         <section className="min-h-screen flex flex-col items-center justify-center px-6 py-24">
           <FadeInSection className="text-center max-w-3xl space-y-12">
@@ -151,8 +151,8 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
         {/* Section 4: The Blackout */}
         <section className="min-h-screen flex flex-col items-center justify-center px-6 py-24 overflow-hidden relative">
           {/* Blurred background elements */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="grid grid-cols-3 gap-8 blur-blackout scale-150 opacity-50">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+            <div className="grid grid-cols-3 gap-8 blur-blackout scale-150 opacity-50 max-w-full">
               {[...Array(9)].map((_, i) => (
                 <div
                   key={i}

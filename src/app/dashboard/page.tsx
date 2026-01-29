@@ -70,8 +70,8 @@ export default async function DashboardPage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-[#050505] pt-24 pb-12 px-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-[#050505] pt-24 pb-12 px-6 overflow-x-hidden w-full">
+      <div className="max-w-4xl mx-auto w-full">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-2">
@@ -115,121 +115,144 @@ export default async function DashboardPage() {
           </div>
         )}
 
-        {/* Main Counter */}
-        <Card className="mb-8">
-          <CardContent className="py-12">
-            <UrgeCounter
-              key={streakSeconds}
-              startFrom={streakSeconds}
-              label={streakSeconds > 0 ? "CURRENT STREAK" : "START MY STREAK"}
-              autoStart={streakSeconds > 0}
-              showDaysMonths
-              onStart={startStreak}
-            />
-          </CardContent>
-        </Card>
+        {/* Main Features - Blurred when no active subscription */}
+        <div className="relative">
+          {/* Blur overlay when no subscription */}
+          {!hasActiveSubscription && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#050505]/80 backdrop-blur-sm">
+              <div className="text-center p-8 border-2 border-[#E11D48] bg-[#0a0a0a] max-w-md mx-4">
+                <p className="text-[#E11D48] font-bold text-lg uppercase tracking-widest mb-4">
+                  SUBSCRIPTION REQUIRED
+                </p>
+                <p className="text-[#a1a1aa] text-sm mb-6">
+                  Start your free trial to unlock all features and track your progress
+                </p>
+                <Button variant="commitment" size="lg" asChild>
+                  <a href="/subscribe">START FREE TRIAL</a>
+                </Button>
+              </div>
+            </div>
+          )}
 
-        {/* Action Buttons */}
-        {streakSeconds > 0 && (
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
-            <RelapseButton />
-          </div>
-        )}
+          {/* Main Content - Blurred when no subscription */}
+          <div className={!hasActiveSubscription ? "blur-sm pointer-events-none select-none" : ""}>
+            {/* Main Counter */}
+            <Card className="mb-8">
+              <CardContent className="py-12">
+                <UrgeCounter
+                  key={streakSeconds}
+                  startFrom={streakSeconds}
+                  label={streakSeconds > 0 ? "CURRENT STREAK" : "START MY STREAK"}
+                  autoStart={streakSeconds > 0 && hasActiveSubscription}
+                  showDaysMonths
+                  onStart={startStreak}
+                />
+              </CardContent>
+            </Card>
 
-        {/* Stats Grid */}
-        <div className="grid md:grid-cols-3 gap-4 mb-12">
-          <Card>
-            <CardHeader>
-              <CardDescription className="text-xs uppercase tracking-widest">
-                Current Streak
-              </CardDescription>
-              <CardTitle className="text-4xl text-[#E11D48]">
-                {streak?.currentStreak || 0} <span className="text-lg text-[#52525b]">days</span>
-              </CardTitle>
-            </CardHeader>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardDescription className="text-xs uppercase tracking-widest">
-                Longest Streak
-              </CardDescription>
-              <CardTitle className="text-4xl text-white">
-                {streak?.longestStreak || 0} <span className="text-lg text-[#52525b]">days</span>
-              </CardTitle>
-            </CardHeader>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardDescription className="text-xs uppercase tracking-widest">
-                Total Relapses
-              </CardDescription>
-              <CardTitle className="text-4xl text-white">
-                {totalRelapses} <span className="text-lg text-[#52525b]">times</span>
-              </CardTitle>
-            </CardHeader>
-          </Card>
-        </div>
-
-        {/* Help My Urge Button */}
-       
-    <CircuitBreaker noContent={false}/>
-    
-
-        {/* Relapse History */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Relapse History</CardTitle>
-            <CardDescription>Your journey back to strength</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {recentRelapses.length === 0 ? (
-              <p className="text-[#52525b] text-sm">No relapses yet. Keep your streak going!</p>
-            ) : (
-              <ul className="space-y-4">
-                {recentRelapses.map((relapse) => {
-                  const relapseWithDetails = relapse as Relapse & {
-                    trigger?: string | null;
-                    feeling?: string | null;
-                  };
-                  return (
-                    <li
-                      key={relapse.id}
-                      className="py-3 border-b border-[#27272a] last:border-0"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex items-start gap-3 flex-1">
-                          <span className="w-2 h-2 bg-[#E11D48] mt-1.5" />
-                          <div className="flex-1 space-y-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-[#a1a1aa] text-sm">
-                                Lost {relapse.streakDays} day{relapse.streakDays !== 1 ? "s" : ""} streak
-                              </span>
-                              {relapseWithDetails.trigger && (
-                                <span className="text-[#52525b] text-xs border border-[#27272a] px-2 py-0.5">
-                                  {relapseWithDetails.trigger}
-                                </span>
-                              )}
-                            </div>
-                            {relapseWithDetails.feeling && (
-                              <p className="text-[#52525b] text-xs italic">
-                                &quot;{relapseWithDetails.feeling}&quot;
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <span className="text-[#52525b] text-xs whitespace-nowrap">
-                          {new Date(relapse.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
+            {/* Action Buttons */}
+            {streakSeconds > 0 && (
+              <div className="flex flex-wrap justify-center gap-4 mb-12">
+                <RelapseButton />
+              </div>
             )}
-          </CardContent>
-        </Card>
+
+            {/* Stats Grid */}
+            <div className="grid md:grid-cols-3 gap-4 mb-12">
+              <Card>
+                <CardHeader>
+                  <CardDescription className="text-xs uppercase tracking-widest">
+                    Current Streak
+                  </CardDescription>
+                  <CardTitle className="text-4xl text-[#E11D48]">
+                    {streak?.currentStreak || 0} <span className="text-lg text-[#52525b]">days</span>
+                  </CardTitle>
+                </CardHeader>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardDescription className="text-xs uppercase tracking-widest">
+                    Longest Streak
+                  </CardDescription>
+                  <CardTitle className="text-4xl text-white">
+                    {streak?.longestStreak || 0} <span className="text-lg text-[#52525b]">days</span>
+                  </CardTitle>
+                </CardHeader>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardDescription className="text-xs uppercase tracking-widest">
+                    Total Relapses
+                  </CardDescription>
+                  <CardTitle className="text-4xl text-white">
+                    {totalRelapses} <span className="text-lg text-[#52525b]">times</span>
+                  </CardTitle>
+                </CardHeader>
+              </Card>
+            </div>
+
+            {/* Help My Urge Button */}
+           
+        <CircuitBreaker noContent={false}/>
+        
+
+            {/* Relapse History */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Relapse History</CardTitle>
+                <CardDescription>Your journey back to strength</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {recentRelapses.length === 0 ? (
+                  <p className="text-[#52525b] text-sm">No relapses yet. Keep your streak going!</p>
+                ) : (
+                  <ul className="space-y-4">
+                    {recentRelapses.map((relapse) => {
+                      const relapseWithDetails = relapse as Relapse & {
+                        trigger?: string | null;
+                        feeling?: string | null;
+                      };
+                      return (
+                        <li
+                          key={relapse.id}
+                          className="py-3 border-b border-[#27272a] last:border-0"
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex items-start gap-3 flex-1">
+                              <span className="w-2 h-2 bg-[#E11D48] mt-1.5" />
+                              <div className="flex-1 space-y-1">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="text-[#a1a1aa] text-sm">
+                                    Lost {relapse.streakDays} day{relapse.streakDays !== 1 ? "s" : ""} streak
+                                  </span>
+                                  {relapseWithDetails.trigger && (
+                                    <span className="text-[#52525b] text-xs border border-[#27272a] px-2 py-0.5">
+                                      {relapseWithDetails.trigger}
+                                    </span>
+                                  )}
+                                </div>
+                                {relapseWithDetails.feeling && (
+                                  <p className="text-[#52525b] text-xs italic">
+                                    &quot;{relapseWithDetails.feeling}&quot;
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <span className="text-[#52525b] text-xs whitespace-nowrap">
+                              {new Date(relapse.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

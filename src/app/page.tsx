@@ -35,7 +35,7 @@ export default async function Home() {
     : null;
 
   return (
-    <div className="relative bg-[#050505] scroll-smooth">
+    <div className="relative bg-[#050505] scroll-smooth overflow-x-hidden w-full">
       <NavBar />
       <LandingContent subscriptionInfo={subscriptionInfo} />
     </div>

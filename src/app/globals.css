@@ -93,12 +93,16 @@
   
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
   
   body {
     @apply bg-background text-foreground font-mono;
     background-color: #050505;
     position: relative;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
   }
   
   /* Noise texture overlay */

@@ -1,7 +1,7 @@
 export function SiteFooter() {
   return (
-    <div className="py-12 px-6 border-t border-[#27272a] bg-[#050505]">
-      <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+    <div className="py-12 px-6 border-t border-[#27272a] bg-[#050505] w-full overflow-x-hidden">
+      <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left w-full">
         <div>
           <span className="text-white font-bold text-xl tracking-tight">URGE</span>
           <p className="text-[#52525b] text-xs mt-1">Break the cycle.</p>

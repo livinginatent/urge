@@ -20,8 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${jetbrainsMono.variable} font-mono antialiased`}>
+    <html lang="en" className="overflow-x-hidden">
+      <body className={`${jetbrainsMono.variable} font-mono antialiased overflow-x-hidden w-full`}>
         {children}
         <SiteFooter />
       </body>

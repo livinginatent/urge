@@ -113,9 +113,9 @@ export function UrgeCounter({
       </span>
 
       {/* Timer Display */}
-      <div className="relative">
+      <div className="relative overflow-hidden">
         {/* Glow effect */}
-        <div className="absolute inset-0 blur-2xl bg-[#E11D48]/20 scale-150" />
+        <div className="absolute inset-0 blur-2xl bg-[#E11D48]/20 scale-150 pointer-events-none" />
         
         {/* Main counter */}
         <div className="relative flex items-baseline gap-1 font-mono">
