@@ -134,12 +134,13 @@ export async function register(
     }
   }
 
+  // TODO: Re-enable email verification when not on free tier
   // Check if email needs verification
   // If email_confirmed_at is null, user needs to verify their email
-  if (data.user && !data.user.email_confirmed_at) {
-    revalidatePath("/", "layout");
-    redirect(`/verify-email?email=${encodeURIComponent(email)}`);
-  }
+  // if (data.user && !data.user.email_confirmed_at) {
+  //   revalidatePath("/", "layout");
+  //   redirect(`/verify-email?email=${encodeURIComponent(email)}`);
+  // }
 
   revalidatePath("/", "layout");
   redirect(redirectTo || "/dashboard");
