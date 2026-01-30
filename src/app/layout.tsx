@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
+import { GoogleAnalytics } from "@next/third-parties/google";
+
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -21,7 +23,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="overflow-x-hidden">
+      <head>
+        <meta name="google-site-verification" content="9iRNcbse1N8DD01MiMVjoygsKV6VsR2Ji8Sqo3UUmS0" />
+      </head>
       <body className={`${jetbrainsMono.variable} font-mono antialiased overflow-x-hidden w-full`}>
+         <GoogleAnalytics gaId="G-ESS9DV1SL8" />
         {children}
         <SiteFooter />
       </body>
