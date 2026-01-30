@@ -76,20 +76,7 @@ export default async function DashboardPage() {
   // Subscription info (derived directly from user – avoid extra queries)
   const hasActiveSubscription =
     user?.isPaidUser ||
-    user?.subscriptionStatus === "TRIALING" ||
     user?.subscriptionStatus === "ACTIVE";
-
-  const isTrialing = user?.subscriptionStatus === "TRIALING";
-
-  const trialDaysRemaining = user?.trialEndsAt
-    ? Math.max(
-        0,
-        Math.ceil(
-          (user.trialEndsAt.getTime() - now.getTime()) /
-            (1000 * 60 * 60 * 24),
-        ),
-      )
-    : null;
 
   return (
     <div className="min-h-screen bg-[#050505] pt-24 pb-12 px-6 overflow-x-hidden w-full">
@@ -108,13 +95,8 @@ export default async function DashboardPage() {
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
                 <p className="text-[#E11D48] font-bold text-sm uppercase tracking-widest">
-                  {isTrialing ? "FREE TRIAL ACTIVE" : "SUBSCRIPTION ACTIVE"}
+                  SUBSCRIPTION ACTIVE
                 </p>
-                {isTrialing && trialDaysRemaining !== null && (
-                  <p className="text-[#a1a1aa] text-sm mt-1">
-                    {trialDaysRemaining} day{trialDaysRemaining !== 1 ? "s" : ""} remaining in your free trial
-                  </p>
-                )}
               </div>
               {/* Future: Add manage subscription link */}
             </div>
@@ -127,11 +109,11 @@ export default async function DashboardPage() {
                   NO ACTIVE SUBSCRIPTION
                 </p>
                 <p className="text-[#a1a1aa] text-sm mt-1">
-                  Start your 30-day free trial to unlock all features
+                  Subscribe to unlock all features
                 </p>
               </div>
               <Button variant="commitment" size="lg" asChild>
-                <a href="/subscribe">START FREE TRIAL</a>
+                <a href="/subscribe">SUBSCRIBE</a>
               </Button>
             </div>
           </div>
@@ -147,10 +129,10 @@ export default async function DashboardPage() {
                   SUBSCRIPTION REQUIRED
                 </p>
                 <p className="text-[#a1a1aa] text-sm mb-6">
-                  Start your free trial to unlock all features and track your progress
+                  Subscribe to unlock all features and track your progress
                 </p>
                 <Button variant="commitment" size="lg" asChild>
-                  <a href="/subscribe">START FREE TRIAL</a>
+                  <a href="/subscribe">SUBSCRIBE</a>
                 </Button>
               </div>
             </div>

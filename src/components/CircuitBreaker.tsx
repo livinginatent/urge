@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion, type Variants } from "framer-motion";
-import { DISTRACTION_ACTIONS } from "@/lib/actions";
+import { DISTRACTION_ACTIONS, type DistractionAction } from "@/lib/actions";
 
 const breakerVariants: Variants = {
   idle: {
@@ -45,7 +45,7 @@ type CircuitBreakerProps = {
 };
 
 export function CircuitBreaker({ noContent = false }: CircuitBreakerProps) {
-  const [action, setAction] = React.useState<string | null>(null);
+  const [action, setAction] = React.useState<DistractionAction | null>(null);
 
   const handlePress = () => {
     if (noContent) {
@@ -89,9 +89,27 @@ export function CircuitBreaker({ noContent = false }: CircuitBreakerProps) {
           <p className="mb-2 text-xl tracking-[0.28em] text-[#52525b] uppercase">
             IMMEDIATE DISTRACTION PROTOCOL
           </p>
-          <p className="text-4xl leading-relaxed">
-            {action}
-          </p>
+          {typeof action === "string" ? (
+            <p className="text-3xl leading-relaxed">
+              {action}
+            </p>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-2xl leading-relaxed text-white mb-4">
+                {action.title}
+              </p>
+              <a
+                href={action.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-6 py-3 border-2 border-[#E11D48] bg-[#E11D48]/10 text-[#E11D48] font-bold uppercase tracking-widest text-sm hover:bg-[#E11D48]/20 transition-colors"
+              >
+                {action.type === "reddit" && "READ ON REDDIT"}
+                {action.type === "wiki" && "READ ON WIKIPEDIA"}
+                {action.type === "youtube" && "WATCH ON YOUTUBE"}
+              </a>
+            </div>
+          )}
         </div>
       )}
     </div>

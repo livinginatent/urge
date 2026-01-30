@@ -37,6 +37,16 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Handle auth code on root URL - redirect to auth callback
+  // This happens when Supabase password reset or email confirmation lands on /
+  const code = request.nextUrl.searchParams.get("code");
+  if (request.nextUrl.pathname === "/" && code) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/callback";
+    // Preserve the code parameter
+    return NextResponse.redirect(url);
+  }
+
   // Redirect authenticated users away from auth pages
   // Respect the `redirect` query param if present (e.g., /login?redirect=/subscribe)
   if (

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
+import { AuthHandler } from "@/components/auth-handler";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
 
@@ -27,7 +28,8 @@ export default function RootLayout({
         <meta name="google-site-verification" content="9iRNcbse1N8DD01MiMVjoygsKV6VsR2Ji8Sqo3UUmS0" />
       </head>
       <body className={`${jetbrainsMono.variable} font-mono antialiased overflow-x-hidden w-full`}>
-         <GoogleAnalytics gaId="G-ESS9DV1SL8" />
+        <GoogleAnalytics gaId="G-ESS9DV1SL8" />
+        <AuthHandler />
         {children}
         <SiteFooter />
       </body>

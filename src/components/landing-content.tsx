@@ -219,7 +219,7 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
                 
                 <ul className="space-y-3 text-sm">
                   {[
-                    "The Override: nstant cognitive intervention for high-intensity urges.",
+                    "The Override: Instant cognitive intervention for high-intensity urges.",
                     "The Counter — You are either disciplined or you are starting over.",
                     "The Sentinel — Automated daily emails to maintain accountability.",
                     "Integrity Logs — Strategic journaling to map your patterns three times a day.",
