@@ -1,4 +1,4 @@
-import type { Relapse } from "@prisma/client";
+import type { Relapse, Journal } from "@prisma/client";
 import { requireAuth } from "@/lib/dal";
 import { prisma } from "@/lib/prisma";
 import { startStreak } from "@/app/actions/streak";
@@ -7,12 +7,13 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { UrgeCounter } from "@/components/urge-counter";
 import { CircuitBreaker } from "@/components/CircuitBreaker";
 import { RelapseButton } from "@/components/relapse-button";
+import { JournalSection } from "@/components/journal-section";
 
 export default async function DashboardPage() {
   // This will redirect to /login?redirect=/dashboard if not authenticated
   const session = await requireAuth("/dashboard");
 
-  // Fetch user data including relapses
+  // Fetch user data including relapses and recent journals
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
     include: {
@@ -21,15 +22,36 @@ export default async function DashboardPage() {
         orderBy: { createdAt: "desc" },
         take: 5,
       },
+      journals: {
+        orderBy: { createdAt: "desc" },
+        take: 10,
+      },
     },
   });
 
   const streak = user?.streak;
   const recentRelapses: Relapse[] = user?.relapses ?? [];
+  const recentJournals: Journal[] = user?.journals ?? [];
   
   // Get total relapse count
   const totalRelapses = await prisma.relapse.count({
     where: { userId: session.userId },
+  });
+
+  // Get today's journal count for the limit
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+
+  const todayJournalCount = await prisma.journal.count({
+    where: {
+      userId: session.userId,
+      createdAt: {
+        gte: todayStart,
+        lte: todayEnd,
+      },
+    },
   });
 
   // Calculate streak seconds from startedAt (fallback to days if missing)
@@ -196,7 +218,14 @@ export default async function DashboardPage() {
             {/* Help My Urge Button */}
            
         <CircuitBreaker noContent={false}/>
-        
+
+            {/* Daily Journal */}
+            <div className="my-8">
+              <JournalSection 
+                initialJournals={recentJournals} 
+                todayCount={todayJournalCount} 
+              />
+            </div>
 
             {/* Relapse History */}
             <Card>

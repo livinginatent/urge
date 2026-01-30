@@ -30,6 +30,7 @@ model User {
   urges    Urge[]
   streak   Streak?
   relapses Relapse[]
+  journals Journal[]
 
   @@map("users")
 }
@@ -85,6 +86,18 @@ model Relapse {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("relapses")
+}
+
+model Journal {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  content   String   @db.VarChar(500) // Short journal entries, max 500 chars
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("journals")
 }
 
 enum UrgeType {

@@ -131,7 +131,7 @@ export function RelapseForm({ isOpen, onClose, onSubmit }: RelapseFormProps) {
               disabled={isSubmitting}
               className="w-full sm:w-auto min-h-[44px]"
             >
-              SKIP
+              Cancel
             </Button>
             <Button
               type="submit"
