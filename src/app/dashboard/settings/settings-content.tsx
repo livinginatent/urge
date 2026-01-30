@@ -156,10 +156,10 @@ export function SettingsContent({ customerPortalUrl, hasSubscription }: Settings
                 <p className="text-[#52525b] text-xs">
                   To manage your subscription, contact{" "}
                   <a
-                    href="mailto:support@useurge.app"
+                    href="mailto:support@urges.app"
                     className="text-[#E11D48] hover:underline"
                   >
-                    support@useurge.app
+                    support@urges.app
                   </a>
                 </p>
               </div>

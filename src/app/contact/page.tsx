@@ -22,7 +22,7 @@ export default function ContactPage() {
         <section className="space-y-8 text-sm leading-relaxed">
           <form
             method="post"
-            action="mailto:support@useurge.app"
+            action="mailto:support@urges.app"
             className="border-2 border-[#27272a] bg-[#0a0a0a] p-6 space-y-6"
           >
             <div className="space-y-1">
@@ -89,7 +89,7 @@ export default function ContactPage() {
             <p className="text-[10px] text-[#52525b]">
               This uses your default mail client. If nothing opens, email{" "}
               <span className="text-white font-semibold">
-                support@useurge.app
+                support@urges.app
               </span>{" "}
               directly.
             </p>

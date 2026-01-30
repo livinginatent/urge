@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     title: "URGE – Break the Cycle, One Urge at a Time",
     description:
       "A brutalist discipline tool that tracks your urges, your relapses, and your streak—with real cost attached.",
-    url: "https://useurge.app/",
+    url: "https://urges.app/",
     siteName: "URGE",
     type: "website",
   },

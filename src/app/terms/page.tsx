@@ -166,7 +166,7 @@ export default function TermsPage() {
             <p>
               Questions about these terms? Reach out at{" "}
               <span className="text-white font-semibold">
-                support@useurge.app
+                support@urges.app
               </span>
               . Keep it direct. We&apos;ll do the same.
             </p>

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = "https://useurge.app";
+  const baseUrl = "https://urges.app";
 
   return {
     rules: {

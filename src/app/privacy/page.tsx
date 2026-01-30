@@ -141,7 +141,7 @@ export default function PrivacyPage() {
             <p>
               For privacy questions or requests, email{" "}
               <span className="text-white font-semibold">
-                privacy@useurge.app
+                privacy@urges.app
               </span>
               . No legalese required—plain language is welcome.
             </p>
