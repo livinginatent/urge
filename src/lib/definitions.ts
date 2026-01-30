@@ -61,6 +61,8 @@ export type LoginFormState =
         password?: string[];
       };
       message?: string;
+      success?: boolean;
+      redirectTo?: string;
     }
   | undefined;
 
@@ -73,6 +75,8 @@ export type RegisterFormState =
         confirmPassword?: string[];
       };
       message?: string;
+      success?: boolean;
+      redirectTo?: string;
     }
   | undefined;
 

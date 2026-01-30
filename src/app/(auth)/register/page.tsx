@@ -1,8 +1,8 @@
 "use client";
 
-import { Suspense, useActionState } from "react";
+import { Suspense, useActionState, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { register } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -19,6 +19,14 @@ function RegisterForm() {
   const [state, action, pending] = useActionState(register, undefined);
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") ?? "";
+  const router = useRouter();
+
+  // Handle redirect on successful registration
+  useEffect(() => {
+    if (state?.success && state?.redirectTo) {
+      router.push(state.redirectTo);
+    }
+  }, [state, router]);
 
   return (
     <Card className="max-w-md w-full">
@@ -27,7 +35,7 @@ function RegisterForm() {
           <span className="text-[#E11D48]">MAKE</span> THE COMMITMENT
         </CardTitle>
         <CardDescription className="text-center">
-          $1/month. That&apos;s the cost of discipline.
+          $2/month. That&apos;s the cost of discipline.
         </CardDescription>
       </CardHeader>
 

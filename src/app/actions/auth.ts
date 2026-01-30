@@ -53,7 +53,12 @@ export async function login(
   }
 
   revalidatePath("/", "layout");
-  redirect(redirectTo || "/dashboard");
+  
+  // Return success state - client handles redirect to avoid useActionState issues
+  return {
+    success: true,
+    redirectTo: redirectTo || "/dashboard",
+  };
 }
 
 export async function register(
@@ -139,11 +144,19 @@ export async function register(
   // If email_confirmed_at is null, user needs to verify their email
   // if (data.user && !data.user.email_confirmed_at) {
   //   revalidatePath("/", "layout");
-  //   redirect(`/verify-email?email=${encodeURIComponent(email)}`);
+  //   return {
+  //     success: true,
+  //     redirectTo: `/verify-email?email=${encodeURIComponent(email)}`,
+  //   };
   // }
 
   revalidatePath("/", "layout");
-  redirect(redirectTo || "/dashboard");
+  
+  // Return success state - client handles redirect to avoid useActionState issues
+  return {
+    success: true,
+    redirectTo: redirectTo || "/dashboard",
+  };
 }
 
 export async function forgotPassword(

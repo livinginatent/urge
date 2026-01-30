@@ -1,8 +1,8 @@
 "use client";
 
-import { Suspense, useActionState } from "react";
+import { Suspense, useActionState, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { login } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -19,6 +19,14 @@ function LoginForm() {
   const [state, action, pending] = useActionState(login, undefined);
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") ?? "";
+  const router = useRouter();
+
+  // Handle redirect on successful login
+  useEffect(() => {
+    if (state?.success && state?.redirectTo) {
+      router.push(state.redirectTo);
+    }
+  }, [state, router]);
 
   return (
     <Card className="max-w-md w-full">
