@@ -12,7 +12,6 @@ import { CircuitBreaker } from "./CircuitBreaker";
 type SubscriptionInfo = {
   isPaidUser: boolean;
   subscriptionStatus: string;
-  trialDaysRemaining: number | null;
 } | null;
 
 function FadeInSection({ children, className = "" }: { children: React.ReactNode; className?: string }) {
@@ -46,14 +45,10 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 0.8], [1, 0.95]);
 
-  // Check if user has an active subscription (paid or trialing)
+  // Check if user has an active subscription
   const hasActiveSubscription =
     subscriptionInfo?.isPaidUser ||
-    subscriptionInfo?.subscriptionStatus === "TRIALING" ||
     subscriptionInfo?.subscriptionStatus === "ACTIVE";
-
-  // Trial days remaining (computed on server, passed as prop)
-  const trialDaysRemaining = subscriptionInfo?.trialDaysRemaining ?? null;
 
   return (
     <>
@@ -224,10 +219,11 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
                 
                 <ul className="space-y-3 text-sm">
                   {[
-                    "Fight every urge",
-                    "Log every victory",
-                    "Build your streak",
-                    "Receive harsh but needed email reminders",
+                    "The Override: nstant cognitive intervention for high-intensity urges.",
+                    "The Counter — You are either disciplined or you are starting over.",
+                    "The Sentinel — Automated daily emails to maintain accountability.",
+                    "Integrity Logs — Strategic journaling to map your patterns three times a day.",
+                    "Zero Fluff — Stripped of gamification and ads. Discipline is not a game.",
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-[#a1a1aa]">
                       <span className="w-1 h-1 bg-[#E11D48]" />
@@ -250,16 +246,9 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
                 {hasActiveSubscription ? (
                   <>
                     <div className="w-full p-4 border-2 border-[#27272a] bg-[#0a0a0a] text-center">
-                      <p className="text-[#E11D48] font-bold text-sm uppercase tracking-widest mb-1">
-                        {subscriptionInfo?.subscriptionStatus === "TRIALING"
-                          ? "FREE TRIAL ACTIVE"
-                          : "YOU'RE COMMITTED"}
+                      <p className="text-[#E11D48] font-bold text-sm uppercase tracking-widest">
+                        YOU&apos;RE COMMITTED
                       </p>
-                      {subscriptionInfo?.subscriptionStatus === "TRIALING" && trialDaysRemaining !== null && (
-                        <p className="text-[#52525b] text-xs">
-                          {trialDaysRemaining} day{trialDaysRemaining !== 1 ? "s" : ""} remaining
-                        </p>
-                      )}
                     </div>
                     <Button variant="outline" size="lg" className="w-full" asChild>
                       <Link href="/dashboard">GO TO DASHBOARD</Link>
@@ -271,7 +260,7 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
                       <a href="/subscribe">MAKE THE COMMITMENT</a>
                     </Button>
                     <p className="text-[10px] text-[#52525b] text-center">
-                      30-day free trial. Cancel anytime.
+                      Cancel anytime.
                     </p>
                   </>
                 )}
@@ -290,7 +279,7 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
           </FadeInSection>
         </section>
 
-        <SiteFooter />
+    
       </div>
     </>
   );
