@@ -19,11 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.6,
     },
-    {
-      url: `${baseUrl}/dashboard`,
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
+ 
     {
       url: `${baseUrl}/terms`,
       changeFrequency: "yearly",

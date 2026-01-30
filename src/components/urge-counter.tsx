@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -12,6 +12,7 @@ interface UrgeCounterProps {
   showDaysMonths?: boolean;
   autoStart?: boolean;
   onStart?: () => Promise<void>;
+  showShareButton?: boolean;
 }
 
 export function UrgeCounter({
@@ -22,10 +23,13 @@ export function UrgeCounter({
   showDaysMonths = false,
   autoStart = true,
   onStart,
+  showShareButton = false,
 }: UrgeCounterProps) {
   const [time, setTime] = useState(startFrom);
   const [isRunning, setIsRunning] = useState(autoStart);
   const [isPending, startTransition] = useTransition();
+  const [isSharing, setIsSharing] = useState(false);
+  const counterRef = useRef<HTMLDivElement>(null);
 
   // Reset counter when startFrom changes (e.g., after relapse)
   useEffect(() => {
@@ -99,6 +103,162 @@ export function UrgeCounter({
       }
     });
   };
+
+  // Generate shareable image using Canvas
+  const generateShareImage = useCallback(async (): Promise<Blob | null> => {
+    const { months: m, days: d, hours: h, minutes: min, seconds: s } = formatTime(time);
+    
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    // Set canvas size (optimized for social media)
+    canvas.width = 1200;
+    canvas.height = 630;
+
+    // Background
+    ctx.fillStyle = "#050505";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Add subtle border
+    ctx.strokeStyle = "#27272a";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+    // Add corner accent
+    ctx.fillStyle = "#E11D48";
+    ctx.fillRect(20, 20, 100, 4);
+    ctx.fillRect(20, 20, 4, 100);
+
+    // Title text
+    ctx.fillStyle = "#52525b";
+    ctx.font = "bold 24px monospace";
+    ctx.textAlign = "center";
+    ctx.fillText("MY STREAK", canvas.width / 2, 100);
+
+    // Main time display
+    ctx.font = "bold 120px monospace";
+    ctx.textAlign = "center";
+    
+    // Build time string
+    let timeStr = "";
+    let labelStr = "";
+    
+    if (showDaysMonths && (m > 0 || d > 0)) {
+      if (m > 0) {
+        timeStr = `${m}M ${d.toString().padStart(2, "0")}D `;
+        labelStr = "months • days • ";
+      } else {
+        timeStr = `${d.toString().padStart(2, "0")}D `;
+        labelStr = "days • ";
+      }
+    }
+    
+    timeStr += `${h}:${min}:${s}`;
+    labelStr += "hrs • min • sec";
+
+    // Draw time with gradient effect
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(timeStr, canvas.width / 2, canvas.height / 2 + 20);
+
+    // Labels below time
+    ctx.fillStyle = "#52525b";
+    ctx.font = "16px monospace";
+    ctx.fillText(labelStr.toUpperCase(), canvas.width / 2, canvas.height / 2 + 70);
+
+    // URGE branding
+    ctx.fillStyle = "#E11D48";
+    ctx.font = "bold 32px monospace";
+    ctx.fillText("URGE", canvas.width / 2, canvas.height - 80);
+
+    // Tagline
+    ctx.fillStyle = "#52525b";
+    ctx.font = "14px monospace";
+    ctx.fillText("urges.app • Break the cycle", canvas.width / 2, canvas.height - 50);
+
+    // Convert to blob
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => resolve(blob), "image/png", 1.0);
+    });
+  }, [time, showDaysMonths]);
+
+  // Share handler
+  const handleShare = useCallback(async () => {
+    setIsSharing(true);
+    
+    try {
+      const imageBlob = await generateShareImage();
+      if (!imageBlob) {
+        console.error("Failed to generate share image");
+        setIsSharing(false);
+        return;
+      }
+
+      const { months: m, days: d, hours: h, minutes: min, seconds: s } = formatTime(time);
+      let streakText = "";
+      if (showDaysMonths && m > 0) {
+        streakText = `${m} months, ${d} days, ${h}:${min}:${s}`;
+      } else if (showDaysMonths && d > 0) {
+        streakText = `${d} days, ${h}:${min}:${s}`;
+      } else {
+        streakText = `${h}:${min}:${s}`;
+      }
+
+      const shareText = `🔥 My current streak: ${streakText}\n\nBuilding discipline one moment at a time.\n\n#URGE #Discipline #Streak`;
+      const shareUrl = "https://urges.app";
+
+      // Try Web Share API first (works on mobile and some desktop browsers)
+      if (navigator.share && navigator.canShare) {
+        const file = new File([imageBlob], "urge-streak.png", { type: "image/png" });
+        const shareData = {
+          title: "My URGE Streak",
+          text: shareText,
+          url: shareUrl,
+          files: [file],
+        };
+
+        if (navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+          setIsSharing(false);
+          return;
+        }
+
+        // Try sharing without files if files aren't supported
+        const textShareData = {
+          title: "My URGE Streak",
+          text: shareText,
+          url: shareUrl,
+        };
+
+        if (navigator.canShare(textShareData)) {
+          await navigator.share(textShareData);
+          setIsSharing(false);
+          return;
+        }
+      }
+
+      // Fallback: Download image
+      const url = URL.createObjectURL(imageBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "urge-streak.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      // Copy text to clipboard
+      await navigator.clipboard.writeText(shareText + "\n" + shareUrl);
+      alert("Image downloaded! Share text copied to clipboard.");
+    } catch (error) {
+      // User cancelled or error occurred
+      if ((error as Error).name !== "AbortError") {
+        console.error("Share failed:", error);
+      }
+    } finally {
+      setIsSharing(false);
+    }
+  }, [generateShareImage, time, showDaysMonths]);
 
   return (
     <motion.div
@@ -228,18 +388,50 @@ export function UrgeCounter({
           </span>
         </div>
 
-        {!isRunning && (
-          <Button
-            type="button"
-            variant="commitment"
-            size="lg"
-            className="px-8"
-            onClick={handleStart}
-            disabled={isPending}
-          >
-            {isPending ? "STARTING..." : "START MY STREAK"}
-          </Button>
-        )}
+        <div className="flex items-center gap-3">
+          {!isRunning && (
+            <Button
+              type="button"
+              variant="commitment"
+              size="lg"
+              className="px-8"
+              onClick={handleStart}
+              disabled={isPending}
+            >
+              {isPending ? "STARTING..." : "START MY STREAK"}
+            </Button>
+          )}
+
+          {/* {showShareButton && isRunning && (
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="px-6 gap-2"
+              onClick={handleShare}
+              disabled={isSharing}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+              </svg>
+              {isSharing ? "SHARING..." : "SHARE"}
+            </Button>
+          )} */}
+        </div>
       </div>
     </motion.div>
   );

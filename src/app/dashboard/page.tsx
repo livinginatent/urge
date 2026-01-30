@@ -150,6 +150,7 @@ export default async function DashboardPage() {
                   autoStart={streakSeconds > 0 && hasActiveSubscription}
                   showDaysMonths
                   onStart={startStreak}
+                  showShareButton={streakSeconds > 0}
                 />
               </CardContent>
             </Card>
