@@ -4,6 +4,7 @@ import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { AuthHandler } from "@/components/auth-handler";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { SanityLive } from "@/sanity/lib/live";
 
 
 const jetbrainsMono = JetBrains_Mono({
@@ -32,6 +33,7 @@ export default function RootLayout({
         <AuthHandler />
         {children}
         <SiteFooter />
+        <SanityLive />
       </body>
     </html>
   );
