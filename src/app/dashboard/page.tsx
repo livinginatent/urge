@@ -2,57 +2,66 @@ import type { Relapse, Journal } from "@prisma/client";
 import { requireAuth } from "@/lib/dal";
 import { prisma } from "@/lib/prisma";
 import { startStreak } from "@/app/actions/streak";
+import { getBuddyProgressForUser, getSentBuddyInvitesForUser } from "@/app/actions/buddy";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { UrgeCounter } from "@/components/urge-counter";
 import { CircuitBreaker } from "@/components/CircuitBreaker";
 import { RelapseButton } from "@/components/relapse-button";
 import { JournalSection } from "@/components/journal-section";
+import { BuddySection } from "@/components/buddy-section";
 
 export default async function DashboardPage() {
   // This will redirect to /login?redirect=/dashboard if not authenticated
   const session = await requireAuth("/dashboard");
+  const userId = session.userId;
 
-  // Fetch user data including relapses and recent journals
-  const user = await prisma.user.findUnique({
-    where: { id: session.userId },
-    include: {
-      streak: true,
-      relapses: {
-        orderBy: { createdAt: "desc" },
-        take: 5,
-      },
-      journals: {
-        orderBy: { createdAt: "desc" },
-        take: 10,
-      },
-    },
-  });
-
-  const streak = user?.streak;
-  const recentRelapses: Relapse[] = user?.relapses ?? [];
-  const recentJournals: Journal[] = user?.journals ?? [];
-  
-  // Get total relapse count
-  const totalRelapses = await prisma.relapse.count({
-    where: { userId: session.userId },
-  });
-
-  // Get today's journal count for the limit
+  // Calculate today's date boundaries once
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
   const todayEnd = new Date();
   todayEnd.setHours(23, 59, 59, 999);
 
-  const todayJournalCount = await prisma.journal.count({
-    where: {
-      userId: session.userId,
-      createdAt: {
-        gte: todayStart,
-        lte: todayEnd,
+  // Fetch all data in parallel to minimize DB round-trips
+  const [user, totalRelapses, todayJournalCount, buddyProgress, sentBuddyInvites] = await Promise.all([
+    // User with related data
+    prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        streak: true,
+        relapses: {
+          orderBy: { createdAt: "desc" },
+          take: 5,
+        },
+        journals: {
+          orderBy: { createdAt: "desc" },
+          take: 10,
+        },
       },
-    },
-  });
+    }),
+    // Total relapse count
+    prisma.relapse.count({
+      where: { userId },
+    }),
+    // Today's journal count
+    prisma.journal.count({
+      where: {
+        userId,
+        createdAt: {
+          gte: todayStart,
+          lte: todayEnd,
+        },
+      },
+    }),
+    // Buddy progress (using optimized function that skips session check)
+    getBuddyProgressForUser(userId),
+    // Sent invites (using optimized function that skips session check)
+    getSentBuddyInvitesForUser(userId),
+  ]);
+
+  const streak = user?.streak;
+  const recentRelapses: Relapse[] = user?.relapses ?? [];
+  const recentJournals: Journal[] = user?.journals ?? [];
 
   // Calculate streak seconds from startedAt (fallback to days if missing)
   const now = new Date();
@@ -62,12 +71,12 @@ export default async function DashboardPage() {
       ? streak.currentStreak * 24 * 60 * 60
       : 0;
 
-  // Keep currentStreak (days) in sync if startedAt exists
+  // Keep currentStreak (days) in sync if startedAt exists (only update if different)
   if (streak?.startedAt) {
     const computedDays = Math.floor(streakSeconds / (24 * 60 * 60));
     if (computedDays !== streak.currentStreak) {
       await prisma.streak.update({
-        where: { userId: session.userId },
+        where: { userId },
         data: { currentStreak: computedDays },
       });
     }
@@ -161,6 +170,14 @@ export default async function DashboardPage() {
                 <RelapseButton />
               </div>
             )}
+
+            {/* Accountability Buddies */}
+            <div className="mb-12">
+              <BuddySection
+                buddies={buddyProgress}
+                pendingInvites={sentBuddyInvites}
+              />
+            </div>
 
             {/* Stats Grid */}
             <div className="grid md:grid-cols-3 gap-4 mb-12">

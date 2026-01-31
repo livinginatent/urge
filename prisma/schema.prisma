@@ -32,6 +32,10 @@ model User {
   relapses Relapse[]
   journals Journal[]
 
+  // Buddy relations
+  sentBuddyRequests     Buddy[] @relation("BuddyInviter")
+  receivedBuddyRequests Buddy[] @relation("BuddyInvitee")
+
   @@map("users")
 }
 
@@ -103,4 +107,28 @@ model Journal {
 enum UrgeType {
   RESISTED
   GAVE_IN
+}
+
+// Buddy system for social accountability
+model Buddy {
+  id        String      @id @default(uuid())
+  inviterId String      @map("inviter_id")
+  inviteeId String?     @map("invitee_id") // null until user accepts
+  inviteeEmail String   @map("invitee_email") // email of invited user
+  status    BuddyStatus @default(PENDING)
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  inviter User  @relation("BuddyInviter", fields: [inviterId], references: [id], onDelete: Cascade)
+  invitee User? @relation("BuddyInvitee", fields: [inviteeId], references: [id], onDelete: Cascade)
+
+  @@unique([inviterId, inviteeEmail]) // Can't invite same email twice
+  @@map("buddies")
+}
+
+enum BuddyStatus {
+  PENDING   // Invite sent, waiting for acceptance
+  ACCEPTED  // Both users are buddies
+  DECLINED  // Invite was declined
 }

@@ -185,3 +185,17 @@
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
+
+/* Numbered list styling */
+.numbered-list {
+  counter-reset: item;
+}
+
+.numbered-list-item {
+  counter-increment: item;
+}
+
+.numbered-list-item > span:first-child::before {
+  content: counter(item) ".";
+  display: inline-block;
+}

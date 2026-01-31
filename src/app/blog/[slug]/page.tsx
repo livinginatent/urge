@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { NavBar } from "@/components/navbar";
 import { PortableText } from "@/components/portable-text";
-import { SiteFooter } from "@/components/site-footer";
 import { sanityFetch } from "@/sanity/lib/live";
 import { POST_QUERY, POST_SLUGS_QUERY } from "@/sanity/lib/queries";
 import { urlFor } from "@/sanity/lib/image";
@@ -12,6 +11,12 @@ import { urlFor } from "@/sanity/lib/image";
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
 }
+
+type Category = {
+  _id: string;
+  title: string;
+  slug: string;
+};
 
 export async function generateStaticParams() {
   const { data: posts } = await sanityFetch({
@@ -147,7 +152,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <header className="mb-12">
             {post.categories && post.categories.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-6">
-                {post.categories.map((category: any) => (
+                {post.categories.map((category: Category) => (
                   <span
                     key={category._id || category.slug || category.title}
                     className="text-xs text-[#52525b] uppercase tracking-widest font-mono border-2 border-[#27272a] px-3 py-1"
@@ -162,21 +167,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               {post.title}
             </h1>
 
-            {post.excerpt && (
-              <p className="text-xl md:text-2xl text-[#a1a1aa] leading-relaxed font-mono mb-8">
-                {post.excerpt}
-              </p>
-            )}
 
             <div className="flex items-center gap-4 text-sm text-[#52525b] font-mono border-t-2 border-b-2 border-[#27272a] py-4">
-              {post.author?.name && (
-                <span className="uppercase tracking-widest">
-                  BY {post.author.name}
-                </span>
-              )}
-              {date && post.author?.name && (
-                <span className="text-[#27272a]">•</span>
-              )}
+             
+            
               {date && <span>{date}</span>}
             </div>
           </header>
@@ -212,7 +206,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
       </main>
 
-      <SiteFooter />
+ 
     </div>
   );
 }

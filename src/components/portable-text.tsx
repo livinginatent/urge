@@ -41,7 +41,7 @@ const components: PortableTextComponents = {
   // Marks
   marks: {
     strong: ({ children }) => (
-      <strong className="font-bold text-white">{children}</strong>
+      <strong className="font-bold text-[#E11D48]">{children}</strong>
     ),
     em: ({ children }) => (
       <em className="italic text-[#a1a1aa]">{children}</em>
@@ -69,12 +69,12 @@ const components: PortableTextComponents = {
   // Lists
   list: {
     bullet: ({ children }) => (
-      <ul className="list-none space-y-3 mb-6 pl-0">
+      <ul className="list-none space-y-3 mb-6 pl-0 max-w-full">
         {children}
       </ul>
     ),
     number: ({ children }) => (
-      <ol className="list-none space-y-3 mb-6 pl-0 counter-reset-[list-counter]">
+      <ol className="numbered-list space-y-3 mb-6 pl-0 max-w-full">
         {children}
       </ol>
     ),
@@ -82,14 +82,15 @@ const components: PortableTextComponents = {
   // List items
   listItem: {
     bullet: ({ children }) => (
-      <li className="flex items-start gap-3 text-[#a1a1aa] font-mono">
+      <li className="flex items-start gap-3 text-[#a1a1aa] font-mono max-w-full">
         <span className="w-1 h-1 bg-[#E11D48] mt-2 flex-shrink-0" />
-        <span className="flex-1">{children}</span>
+        <span className="flex-1 min-w-0 break-words">{children}</span>
       </li>
     ),
     number: ({ children }) => (
-      <li className="flex items-start gap-3 text-[#a1a1aa] font-mono">
-        <span className="text-[#E11D48] font-bold flex-shrink-0">{children}</span>
+      <li className="flex items-start gap-3 text-[#a1a1aa] font-mono max-w-full numbered-list-item">
+        <span className="text-[#E11D48] font-bold flex-shrink-0 mt-0.5 min-w-[1.5rem]" />
+        <span className="flex-1 min-w-0 break-words">{children}</span>
       </li>
     ),
   },
@@ -126,7 +127,7 @@ const components: PortableTextComponents = {
 };
 
 interface PortableTextProps {
-  value: any;
+  value: unknown;
 }
 
 export function PortableText({ value }: PortableTextProps) {

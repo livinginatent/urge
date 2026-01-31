@@ -223,6 +223,7 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
                     "The Counter — You are either disciplined or you are starting over.",
                     "The Sentinel — Automated daily emails to maintain accountability.",
                     "Integrity Logs — Strategic journaling to map your patterns three times a day.",
+                    "Accountability Buddies — Track progress with up to two trusted partners. See their streak, they see yours.",
                     "Zero Fluff — Stripped of gamification and ads. Discipline is not a game.",
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-[#a1a1aa]">

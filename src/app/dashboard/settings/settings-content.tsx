@@ -6,15 +6,18 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { PasswordInput } from "@/components/ui/password-input";
+import { PendingBuddyRequests } from "@/components/pending-buddy-requests";
 import { changePassword, deleteAccount } from "@/app/actions/auth";
 import type { ChangePasswordFormState, DeleteAccountFormState } from "@/lib/definitions";
+import type { PendingBuddyRequest } from "@/app/actions/buddy";
 
 type SettingsContentProps = {
   customerPortalUrl: string | null;
   hasSubscription: boolean;
+  pendingBuddyRequests: PendingBuddyRequest[];
 };
 
-export function SettingsContent({ customerPortalUrl, hasSubscription }: SettingsContentProps) {
+export function SettingsContent({ customerPortalUrl, hasSubscription, pendingBuddyRequests }: SettingsContentProps) {
   const [passwordState, passwordAction, passwordPending] = useActionState<
     ChangePasswordFormState,
     FormData
@@ -43,6 +46,9 @@ export function SettingsContent({ customerPortalUrl, hasSubscription }: Settings
           </h1>
           <p className="text-[#52525b] mt-2">Manage your account.</p>
         </div>
+
+        {/* Pending Buddy Requests */}
+        <PendingBuddyRequests requests={pendingBuddyRequests} />
 
         {/* Change Password */}
         <Card className="mb-8">
