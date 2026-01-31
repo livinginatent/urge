@@ -93,9 +93,45 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       })
     : null;
 
+  const imageUrlForSchema = post.mainImage?.asset?.url
+    ? urlFor(post.mainImage).width(1200).height(630).url()
+    : undefined;
+
+  // JSON-LD structured data for SEO
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt || post.title,
+    image: imageUrlForSchema,
+    datePublished: post.publishedAt,
+    dateModified: post.publishedAt,
+    author: post.author?.name
+      ? {
+          "@type": "Person",
+          name: post.author.name,
+        }
+      : undefined,
+    publisher: {
+      "@type": "Organization",
+      name: "URGE",
+      url: "https://urges.app",
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://urges.app/blog/${slug}`,
+    },
+  };
+
   return (
     <div className="relative bg-[#050505] min-h-screen w-full overflow-x-hidden">
       <NavBar />
+
+      {/* JSON-LD structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
 
       <main className="pt-24 pb-16 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
