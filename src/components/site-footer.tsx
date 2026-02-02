@@ -8,6 +8,9 @@ export function SiteFooter() {
         </div>
 
         <div className="flex items-center gap-6 text-[#52525b] text-xs">
+          <a href="/about" className="hover:text-white transition-colors">
+            About
+          </a>
           <a href="/blog" className="hover:text-white transition-colors">
             Blog
           </a>

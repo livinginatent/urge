@@ -82,7 +82,7 @@ export function BuddyProgressCard({ buddy }: BuddyProgressCardProps) {
                 key={index}
                 className={`w-4 h-4 border-2 ${
                   clean
-                    ? "bg-transparent border-[#27272a]"
+                    ? "bg-white border-white"
                     : "bg-[#E11D48] border-[#E11D48]"
                 }`}
                 title={clean ? "Clean day" : "Relapse day"}
@@ -91,7 +91,7 @@ export function BuddyProgressCard({ buddy }: BuddyProgressCardProps) {
           </div>
           <div className="flex items-center gap-4 mt-2 text-[10px] text-[#52525b]">
             <div className="flex items-center gap-1">
-              <div className="w-2 h-2 border border-[#27272a]" />
+              <div className="w-2 h-2 bg-white border border-[#ffffff]" />
               <span>Clean</span>
             </div>
             <div className="flex items-center gap-1">
