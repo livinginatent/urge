@@ -145,3 +145,28 @@ export type DeleteAccountFormState =
       message?: string;
     }
   | undefined;
+
+// Contact form schema
+export const ContactFormSchema = z.object({
+  reason: z.enum(["support", "billing", "feedback", "other"], {
+    errorMap: () => ({ message: "Please select a reason." }),
+  }),
+  email: z.string().email({ message: "Please enter a valid email." }).trim(),
+  message: z
+    .string()
+    .min(10, { message: "Message must be at least 10 characters." })
+    .max(2000, { message: "Message must be 2000 characters or less." })
+    .trim(),
+});
+
+export type ContactFormState =
+  | {
+      errors?: {
+        reason?: string[];
+        email?: string[];
+        message?: string[];
+      };
+      message?: string;
+      success?: boolean;
+    }
+  | undefined;

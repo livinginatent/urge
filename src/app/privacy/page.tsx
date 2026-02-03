@@ -308,7 +308,7 @@ export default function PrivacyPage() {
 
             <p className="mt-3">
               To exercise any of these rights, contact us at{" "}
-              <span className="text-white font-semibold">privacy@urges.app</span>. We will respond to your request within 30 days, or sooner where required by law.
+              <span className="text-white font-semibold">contact@urges.app</span>. We will respond to your request within 30 days, or sooner where required by law.
             </p>
           </div>
 
@@ -359,7 +359,7 @@ export default function PrivacyPage() {
             </div>
 
             <p className="mt-3 text-[#52525b] text-xs">
-              No system is 100% secure, but we treat your data with the seriousness it deserves. If you discover a security vulnerability, please report it to privacy@urges.app.
+              No system is 100% secure, but we treat your data with the seriousness it deserves. If you discover a security vulnerability, please report it to contact@urges.app.
             </p>
           </div>
 
@@ -427,7 +427,7 @@ export default function PrivacyPage() {
             <div className="space-y-2">
               <p>
                 <strong className="text-white">Email:</strong>{" "}
-                <span className="text-white font-semibold">privacy@urges.app</span>
+                <span className="text-white font-semibold">contact@urges.app</span>
               </p>
               <p>
                 <strong className="text-white">Response Time:</strong> We aim to respond to all privacy inquiries within 30 days, often sooner.
