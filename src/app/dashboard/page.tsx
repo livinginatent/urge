@@ -71,14 +71,50 @@ export default async function DashboardPage() {
       ? streak.currentStreak * 24 * 60 * 60
       : 0;
 
-  // Keep currentStreak (days) in sync if startedAt exists (only update if different)
-  if (streak?.startedAt) {
-    const computedDays = Math.floor(streakSeconds / (24 * 60 * 60));
-    if (computedDays !== streak.currentStreak) {
+  // Keep currentStreak (days) in sync if startedAt exists
+  // Always update longestStreak if current streak exceeds it
+  if (streak) {
+    let currentDays: number;
+    let needsUpdate = false;
+    const updateData: { currentStreak?: number; longestStreak?: number } = {};
+
+    if (streak.startedAt) {
+      // Calculate from startedAt timestamp
+      currentDays = Math.floor(streakSeconds / (24 * 60 * 60));
+      
+      // Update currentStreak if it's out of sync
+      if (currentDays !== streak.currentStreak) {
+        updateData.currentStreak = currentDays;
+        needsUpdate = true;
+      }
+    } else {
+      // Use stored currentStreak value
+      currentDays = streak.currentStreak ?? 0;
+    }
+
+    // Always check and update longestStreak if current streak exceeds it
+    const currentLongestStreak = streak.longestStreak ?? 0;
+    const newLongestStreak = Math.max(currentLongestStreak, currentDays);
+    
+    if (newLongestStreak !== currentLongestStreak) {
+      updateData.longestStreak = newLongestStreak;
+      needsUpdate = true;
+    }
+
+    // Only update if something changed
+    if (needsUpdate) {
       await prisma.streak.update({
         where: { userId },
-        data: { currentStreak: computedDays },
+        data: updateData,
       });
+      // Re-fetch streak to get updated values for display
+      const updatedStreak = await prisma.streak.findUnique({
+        where: { userId },
+      });
+      if (updatedStreak) {
+        // Update the local reference so UI shows correct values
+        Object.assign(streak, updatedStreak);
+      }
     }
   }
 
