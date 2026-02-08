@@ -70,6 +70,7 @@ export async function updateSession(request: NextRequest) {
   // - /api/* (API routes including webhooks)
   // - /checkout/* (payment routes)
   // - /subscribe (handles its own auth check via requireAuth)
+  // - /blog (blog listing and individual posts)
   if (
     !user &&
     !request.nextUrl.pathname.startsWith("/login") &&
@@ -84,6 +85,7 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith("/terms") &&
     !request.nextUrl.pathname.startsWith("/privacy") &&
     !request.nextUrl.pathname.startsWith("/contact") &&
+    !request.nextUrl.pathname.startsWith("/blog") &&
     request.nextUrl.pathname !== "/"
   ) {
     const url = request.nextUrl.clone();
