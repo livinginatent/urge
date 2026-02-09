@@ -18,13 +18,20 @@ export async function POST(request: NextRequest) {
     where: { userId: session.userId },
   });
 
-  // Calculate how many days the streak was
+  // Calculate how many calendar days the streak was (not 24-hour periods)
   const streakDays =
     existingStreak?.startedAt
-      ? Math.floor(
-          (now.getTime() - existingStreak.startedAt.getTime()) /
-            (1000 * 60 * 60 * 24),
-        )
+      ? (() => {
+          // Set both dates to midnight to get accurate day count
+          const startDate = new Date(existingStreak.startedAt);
+          startDate.setHours(0, 0, 0, 0);
+          const todayDate = new Date(now);
+          todayDate.setHours(0, 0, 0, 0);
+          
+          // Calculate difference in milliseconds, then convert to days
+          const diffTime = todayDate.getTime() - startDate.getTime();
+          return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        })()
       : existingStreak?.currentStreak ?? 0;
 
   // Update longest streak if this was their best

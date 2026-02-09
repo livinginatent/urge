@@ -79,8 +79,16 @@ export default async function DashboardPage() {
     const updateData: { currentStreak?: number; longestStreak?: number } = {};
 
     if (streak.startedAt) {
-      // Calculate from startedAt timestamp
-      currentDays = Math.floor(streakSeconds / (24 * 60 * 60));
+      // Calculate calendar days (not 24-hour periods)
+      // Set both dates to midnight to get accurate day count
+      const startDate = new Date(streak.startedAt);
+      startDate.setHours(0, 0, 0, 0);
+      const todayDate = new Date(now);
+      todayDate.setHours(0, 0, 0, 0);
+      
+      // Calculate difference in milliseconds, then convert to days
+      const diffTime = todayDate.getTime() - startDate.getTime();
+      currentDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
       
       // Update currentStreak if it's out of sync
       if (currentDays !== streak.currentStreak) {
