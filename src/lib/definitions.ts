@@ -149,7 +149,7 @@ export type DeleteAccountFormState =
 // Contact form schema
 export const ContactFormSchema = z.object({
   reason: z.enum(["support", "billing", "feedback", "other"], {
-    errorMap: () => ({ message: "Please select a reason." }),
+    message: "Please select a reason.",
   }),
   email: z.string().email({ message: "Please enter a valid email." }).trim(),
   message: z
