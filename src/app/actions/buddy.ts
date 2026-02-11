@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { verifySession } from "@/lib/dal";
 import { z } from "zod";
 
-const MAX_BUDDIES = 2;
+const FREE_MAX_BUDDIES = 1;
+const PAID_MAX_BUDDIES = 6;
 
 const inviteBuddySchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -35,10 +36,14 @@ export async function inviteBuddy(
 
   const inviteeEmail = validation.data.email.toLowerCase();
 
-  // Get current user
+  // Get current user (including subscription info)
   const currentUser = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { email: true },
+    select: {
+      email: true,
+      isPaidUser: true,
+      subscriptionStatus: true,
+    },
   });
 
   if (!currentUser) {
@@ -50,6 +55,12 @@ export async function inviteBuddy(
     return { success: false, error: "You can't add yourself as a buddy" };
   }
 
+  // Determine buddy limit based on subscription
+  const hasActiveSubscription =
+    currentUser.isPaidUser ||
+    currentUser.subscriptionStatus === "ACTIVE";
+  const maxBuddies = hasActiveSubscription ? PAID_MAX_BUDDIES : FREE_MAX_BUDDIES;
+
   // Check if user already has max buddies (count accepted + pending sent)
   const existingBuddyCount = await prisma.buddy.count({
     where: {
@@ -58,10 +69,10 @@ export async function inviteBuddy(
     },
   });
 
-  if (existingBuddyCount >= MAX_BUDDIES) {
+  if (existingBuddyCount >= maxBuddies) {
     return {
       success: false,
-      error: `You can only have up to ${MAX_BUDDIES} buddies`,
+      error: `You can only have up to ${maxBuddies} buddies`,
     };
   }
 

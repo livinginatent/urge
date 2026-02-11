@@ -10,6 +10,18 @@ const MAX_CONTENT_LENGTH = 500;
 export async function createJournal(content: string) {
   const session = await requireAuth("/dashboard");
 
+  // Get user subscription info
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: {
+      isPaidUser: true,
+      subscriptionStatus: true,
+    },
+  });
+
+  const hasActiveSubscription =
+    user?.isPaidUser || user?.subscriptionStatus === "ACTIVE";
+
   // Validate content
   const trimmedContent = content.trim();
   if (!trimmedContent) {
@@ -19,25 +31,27 @@ export async function createJournal(content: string) {
     return { error: `Journal content cannot exceed ${MAX_CONTENT_LENGTH} characters` };
   }
 
-  // Check daily limit
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-  
-  const todayEnd = new Date();
-  todayEnd.setHours(23, 59, 59, 999);
+  // Check daily limit for free users only
+  if (!hasActiveSubscription) {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
 
-  const todayCount = await prisma.journal.count({
-    where: {
-      userId: session.userId,
-      createdAt: {
-        gte: todayStart,
-        lte: todayEnd,
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const todayCount = await prisma.journal.count({
+      where: {
+        userId: session.userId,
+        createdAt: {
+          gte: todayStart,
+          lte: todayEnd,
+        },
       },
-    },
-  });
+    });
 
-  if (todayCount >= MAX_JOURNALS_PER_DAY) {
-    return { error: `You can only write ${MAX_JOURNALS_PER_DAY} journal entries per day` };
+    if (todayCount >= MAX_JOURNALS_PER_DAY) {
+      return { error: `You can only write ${MAX_JOURNALS_PER_DAY} journal entries per day` };
+    }
   }
 
   // Create journal entry

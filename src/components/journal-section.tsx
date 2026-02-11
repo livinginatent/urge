@@ -14,20 +14,23 @@ type Journal = {
 type JournalSectionProps = {
   initialJournals: Journal[];
   todayCount: number;
+  isPaidUser: boolean;
 };
 
 const MAX_JOURNALS_PER_DAY = 3;
 const MAX_CONTENT_LENGTH = 500;
 
-export function JournalSection({ initialJournals, todayCount }: JournalSectionProps) {
+export function JournalSection({ initialJournals, todayCount, isPaidUser }: JournalSectionProps) {
   const [journals, setJournals] = React.useState<Journal[]>(initialJournals);
   const [content, setContent] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const [remainingToday, setRemainingToday] = React.useState(MAX_JOURNALS_PER_DAY - todayCount);
+  const [remainingToday, setRemainingToday] = React.useState(
+    Math.max(0, MAX_JOURNALS_PER_DAY - todayCount)
+  );
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
 
-  const canWrite = remainingToday > 0;
+  const canWrite = isPaidUser || remainingToday > 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +56,9 @@ export function JournalSection({ initialJournals, todayCount }: JournalSectionPr
 
     setJournals([newJournal, ...journals]);
     setContent("");
-    setRemainingToday((prev) => prev - 1);
+    if (!isPaidUser) {
+      setRemainingToday((prev) => Math.max(0, prev - 1));
+    }
     setIsSubmitting(false);
   };
 
@@ -78,7 +83,7 @@ export function JournalSection({ initialJournals, todayCount }: JournalSectionPr
         journalDate.getMonth() === today.getMonth() &&
         journalDate.getFullYear() === today.getFullYear();
 
-      if (isToday) {
+      if (isToday && !isPaidUser) {
         setRemainingToday((prev) => prev + 1);
       }
     }
@@ -115,10 +120,16 @@ export function JournalSection({ initialJournals, todayCount }: JournalSectionPr
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
             <CardTitle>Daily Journal</CardTitle>
-            <CardDescription>Reflect on your journey. Up to 3 entries per day.</CardDescription>
+            <CardDescription>
+              {isPaidUser
+                ? "Reflect on your journey. Unlimited entries per day."
+                : "Reflect on your journey. Up to 3 entries per day."}
+            </CardDescription>
           </div>
           <div className="text-xs text-[#52525b] border border-[#27272a] px-2 py-1">
-            {remainingToday}/{MAX_JOURNALS_PER_DAY} remaining today
+            {isPaidUser
+              ? "Unlimited"
+              : `${remainingToday}/${MAX_JOURNALS_PER_DAY} remaining today`}
           </div>
         </div>
       </CardHeader>

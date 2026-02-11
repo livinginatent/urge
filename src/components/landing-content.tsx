@@ -196,15 +196,17 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
           <FadeInSection className="flex flex-col items-center w-full">
             <div className="text-center mb-8 md:mb-16">
               <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-4">
-                THE DEAL
+                THE LINE
               </h2>
-              <p className="text-[#52525b]">No tiers. No gimmicks. One choice.</p>
+              <p className="text-[#52525b]">
+                Use URGE for free. Pay when you want consequences.
+              </p>
             </div>
 
             <Card className="max-w-md w-full">
               <CardHeader>
                 <CardDescription className="text-[#52525b] uppercase tracking-widest text-xs">
-                  Monthly Commitment
+                  Start Free. Raise the Stakes When You&apos;re Ready.
                 </CardDescription>
                 <CardTitle className="flex items-baseline gap-1">
                   <span className="text-6xl md:text-7xl text-[#E11D48]">$2</span>
@@ -212,33 +214,56 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
                 </CardTitle>
               </CardHeader>
               
-              <CardContent className="space-y-4">
-                <p className="text-[#a1a1aa] text-sm leading-relaxed">
-                  That&apos;s the cost of a single moment of weakness.
-                </p>
-                
-                <ul className="space-y-3 text-sm">
-                  {[
-                    "The Override: Instant cognitive intervention for high-intensity urges.",
-                    "The Counter — You are either disciplined or you are starting over.",
-                    "The Sentinel — Automated daily emails to maintain accountability.",
-                    "Integrity Logs — Strategic journaling to map your patterns three times a day.",
-                    "Accountability Buddies — Track progress with up to two trusted partners. See their streak, they see yours.",
-                    "Zero Fluff — Stripped of gamification and ads. Discipline is not a game.",
-                  ].map((item, i) => (
-                    <li key={i} className="flex items-center gap-3 text-[#a1a1aa]">
-                      <span className="w-1 h-1 bg-[#E11D48]" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <p className="text-[#a1a1aa] text-sm leading-relaxed">
+                    URGE is not paywalled. You can suffer for free.
+                  </p>
+                  <p className="text-[#52525b] text-xs uppercase tracking-widest">
+                    Free Discipline Layer
+                  </p>
+                  <ul className="space-y-2 text-sm">
+                    {[
+                      "The Counter — Your streak timer. You are either disciplined or you are starting over.",
+                      "The Override — A hard interruption button when the urge spikes.",
+                      "Integrity Logs — Three structured journals per day to map your patterns.",
+                      "Accountability Buddy — One partner who sees your streak. You see theirs.",
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-center gap-3 text-[#a1a1aa]">
+                        <span className="w-1 h-1 bg-[#a1a1aa]" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="space-y-2 pt-4 border-t border-[#27272a]">
+                  <p className="text-[#52525b] text-xs uppercase tracking-widest">
+                    $2/mo Consequence Layer
+                  </p>
+                  <ul className="space-y-2 text-sm">
+                    {[
+                      "Everything in the free layer, plus:",
+                      "The Sentinel — Automated daily emails so your urges follow you into your inbox.",
+                      "Unlimited Journals — Log every trigger, every slip, every pattern without limit.",
+                      "Accountability Network — Up to six trusted partners in your corner.",
+                      "Insights & Analytics — Relapse patterns, trigger analysis, and data that makes your behavior impossible to ignore.",
+                      "Zero Fluff — No badges, no coins, no ads. Just pressure.",
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-center gap-3 text-[#a1a1aa]">
+                        <span className="w-1 h-1 bg-[#E11D48]" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
                 <div className="pt-4 border-t border-[#27272a]">
                   <p className="text-[10px] text-[#52525b] uppercase tracking-widest mb-2">
                     The real question:
                   </p>
                   <p className="text-white font-semibold">
-                    What does your habit cost you?
+                    What does doing nothing keep costing you?
                   </p>
                 </div>
               </CardContent>
@@ -257,11 +282,17 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
                   </>
                 ) : (
                   <>
-                    <Button variant="commitment" size="xl" className="w-full" asChild>
-                      <a href="/subscribe">MAKE THE COMMITMENT</a>
-                    </Button>
-                    <p className="text-[10px] text-[#52525b] text-center">
-                      Cancel anytime.
+                    <div className="w-full flex flex-col gap-3">
+                      <Button variant="outline" size="lg" className="w-full" asChild>
+                        <Link href="/register">START FREE</Link>
+                      </Button>
+                      <Button variant="commitment" size="xl" className="w-full" asChild>
+                        <a href="/subscribe">MAKE THE COMMITMENT</a>
+                      </Button>
+                    </div>
+                    <p className="text-[10px] text-[#52525b] text-center leading-relaxed">
+                      Start with the free layer. Add $2/month when you&apos;re done
+                      pretending this habit is cheap.
                     </p>
                   </>
                 )}
@@ -271,10 +302,10 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
             {/* Final message */}
             <div className="mt-16 md:mt-24 text-center">
               <p className="text-[#52525b] text-sm mb-4">
-                Every habit has a price. Pay it now, or pay it later.
+                Every habit has a price. Free gets you started. Consequences keep you in.
               </p>
               <p className="text-white font-bold text-lg">
-                <span className="text-[#E11D48]">$2/month</span> is cheaper than regret.
+                The question isn&apos;t if you&apos;ll pay — it&apos;s <span className="text-[#E11D48]">when</span>.
               </p>
             </div>
           </FadeInSection>
