@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Bar,
   BarChart,
@@ -46,6 +46,48 @@ const triggerConfig = {
 const streakDistributionConfig = {
   relapses: { label: "Relapses", color: "#E11D48" },
 };
+
+function InfoTooltip({ text }: { text: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
+      if (tooltipRef.current && !tooltipRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+        document.removeEventListener("touchstart", handleClickOutside);
+      };
+    }
+  }, [isOpen]);
+
+  return (
+    <div className="relative" ref={tooltipRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        onMouseEnter={() => setIsOpen(true)}
+        onMouseLeave={() => setIsOpen(false)}
+        className="cursor-help touch-manipulation"
+        aria-label="Show information"
+      >
+        <Info className="w-4 h-4 text-[#52525b] hover:text-[#a1a1aa] transition-colors" />
+      </button>
+      {isOpen && (
+        <div className="absolute left-0 top-6 z-50 w-64 max-w-[calc(100vw-2rem)] p-3 bg-[#0a0a0a] border-2 border-[#27272a] text-[#a1a1aa] text-xs rounded-none shadow-[8px_8px_0_0_#1a1a1a]">
+          {text}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function InsightsSection({
   stats,
@@ -97,12 +139,7 @@ export function InsightsSection({
             </CardDescription>
             <div className="flex items-center gap-2">
               <CardTitle className="text-2xl">Last 30-90 Days</CardTitle>
-              <span
-                title="Key metrics from the last 30-90 days: average streak length before relapses, journaling frequency, total relapses, and time since last relapse."
-                className="cursor-help"
-              >
-                <Info className="w-4 h-4 text-[#52525b]" />
-              </span>
+              <InfoTooltip text="Key metrics from the last 30-90 days: average streak length before relapses, journaling frequency, total relapses, and time since last relapse." />
             </div>
           </CardHeader>
           <CardContent className="grid md:grid-cols-4 gap-4">
@@ -150,12 +187,7 @@ export function InsightsSection({
             </CardDescription>
             <div className="flex items-center gap-2">
               <CardTitle className="text-2xl">Time Of Day</CardTitle>
-              <span
-                title="Shows when relapses typically occur throughout the day. Identifying time patterns can help you prepare for high-risk periods."
-                className="cursor-help"
-              >
-                <Info className="w-4 h-4 text-[#52525b]" />
-              </span>
+              <InfoTooltip text="Shows when relapses typically occur throughout the day. Identifying time patterns can help you prepare for high-risk periods." />
             </div>
           </CardHeader>
           <CardContent>
@@ -189,12 +221,7 @@ export function InsightsSection({
             </CardDescription>
             <div className="flex items-center gap-2">
               <CardTitle className="text-2xl">Weekly Activity</CardTitle>
-              <span
-                title="Compares your journaling frequency against relapses week by week. Higher journaling often correlates with fewer relapses."
-                className="cursor-help"
-              >
-                <Info className="w-4 h-4 text-[#52525b]" />
-              </span>
+              <InfoTooltip text="Compares your journaling frequency against relapses week by week. Higher journaling often correlates with fewer relapses." />
             </div>
           </CardHeader>
           <CardContent>
@@ -218,12 +245,7 @@ export function InsightsSection({
             </CardDescription>
             <div className="flex items-center gap-2">
               <CardTitle className="text-2xl">Common Reasons</CardTitle>
-              <span
-                title="Most frequently cited reasons for relapses. Understanding your triggers helps you develop targeted prevention strategies."
-                className="cursor-help"
-              >
-                <Info className="w-4 h-4 text-[#52525b]" />
-              </span>
+              <InfoTooltip text="Most frequently cited reasons for relapses. Understanding your triggers helps you develop targeted prevention strategies." />
             </div>
           </CardHeader>
           <CardContent>
@@ -261,12 +283,7 @@ export function InsightsSection({
             </CardDescription>
             <div className="flex items-center gap-2">
               <CardTitle className="text-2xl">Streak Distribution</CardTitle>
-              <span
-                title="Shows how often relapses occur at different streak lengths. Early streaks (0-7 days) are the most vulnerable period. Understanding your danger zones helps you prepare for high-risk moments."
-                className="cursor-help"
-              >
-                <Info className="w-4 h-4 text-[#52525b]" />
-              </span>
+              <InfoTooltip text="Shows how often relapses occur at different streak lengths. Early streaks (0-7 days) are the most vulnerable period. Understanding your danger zones helps you prepare for high-risk moments." />
             </div>
           </CardHeader>
           <CardContent>
