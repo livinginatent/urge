@@ -81,7 +81,7 @@ function InfoTooltip({ text }: { text: string }) {
         <Info className="w-4 h-4 text-[#52525b] hover:text-[#a1a1aa] transition-colors" />
       </button>
       {isOpen && (
-        <div className="absolute left-0 top-6 z-50 w-64 max-w-[calc(100vw-2rem)] p-3 bg-[#0a0a0a] border-2 border-[#27272a] text-[#a1a1aa] text-xs rounded-none shadow-[8px_8px_0_0_#1a1a1a]">
+        <div className="absolute right-0 top-6 z-50 w-64 max-w-[calc(100vw-1rem)] p-3 bg-[#0a0a0a] border-2 border-[#27272a] text-[#a1a1aa] text-xs rounded-none shadow-[8px_8px_0_0_#1a1a1a] sm:left-0 sm:right-auto sm:max-w-none">
           {text}
         </div>
       )}
