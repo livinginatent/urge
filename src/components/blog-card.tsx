@@ -45,7 +45,7 @@ export function BlogCard({ post }: BlogCardProps) {
         day: "numeric",
       })
     : null;
-
+//
   return (
     <Link href={`/blog/${post.slug}`}>
       <Card className="group hover:border-[#E11D48] transition-colors cursor-pointer h-full flex flex-col">
