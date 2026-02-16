@@ -224,10 +224,10 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
                   </p>
                   <ul className="space-y-2 text-sm">
                     {[
-                      "The Counter — Your streak timer. You are either disciplined or you are starting over.",
-                      "The Override — A hard interruption button when the urge spikes.",
-                      "Integrity Logs — Three structured journals per day to map your patterns.",
-                      "Accountability Buddy — One partner who sees your streak. You see theirs.",
+                      "Your streak timer. You are either disciplined or you are starting over.",
+                      "A hard override button to defeat your urge.",
+                      "Three structured journals per day to write down your thoughts.",
+                      "An accountability partner who sees your streak. You see theirs.",
                     ].map((item, i) => (
                       <li key={i} className="flex items-center gap-3 text-[#a1a1aa]">
                         <span className="w-1 h-1 bg-[#a1a1aa]" />
@@ -244,7 +244,7 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
                   <ul className="space-y-2 text-sm">
                     {[
                       "Everything in the free layer, plus:",
-                      "The Sentinel — Automated daily emails so your urges follow you into your inbox.",
+                      "Automated daily emails so your urges follow you into your inbox.",
                       "Unlimited Journals — Log every trigger, every slip, every pattern without limit.",
                       "Accountability Network — Up to six trusted partners in your corner.",
                       "Insights & Analytics — Relapse patterns, trigger analysis, and data that makes your behavior impossible to ignore.",
