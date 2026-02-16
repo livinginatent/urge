@@ -238,42 +238,20 @@ export default async function DashboardPage() {
     .slice(0, 5)
     .map(([trigger, count]) => ({ trigger, count }));
 
-  const journalTimes = journalsForInsights
-    .map((journal) => journal.createdAt.getTime())
-    .sort((a, b) => a - b);
-
-  const hasJournalInWindow = (start: number, end: number) => {
-    let left = 0;
-    let right = journalTimes.length - 1;
-    let firstValid = -1;
-
-    while (left <= right) {
-      const mid = Math.floor((left + right) / 2);
-      if (journalTimes[mid] >= start) {
-        firstValid = mid;
-        right = mid - 1;
-      } else {
-        left = mid + 1;
-      }
-    }
-
-    if (firstValid === -1) {
-      return false;
-    }
-
-    return journalTimes[firstValid] <= end;
-  };
-
-  const relapseWithJournal = relapsesForInsights.filter((relapse) =>
-    hasJournalInWindow(relapse.createdAt.getTime() - MS_IN_DAY, relapse.createdAt.getTime())
-  ).length;
-
-  const relapseWithoutJournal = Math.max(0, relapsesForInsights.length - relapseWithJournal);
-
-  const journalBeforeRelapse = [
-    { label: "With Journal", value: relapseWithJournal },
-    { label: "No Journal", value: relapseWithoutJournal },
+  // Streak Distribution: Group relapses by streak length at time of relapse
+  const streakBuckets = [
+    { label: "0-3 days", min: 0, max: 3 },
+    { label: "4-7 days", min: 4, max: 7 },
+    { label: "8-14 days", min: 8, max: 14 },
+    { label: "15+ days", min: 15, max: Infinity },
   ];
+
+  const streakDistribution = streakBuckets.map((bucket) => ({
+    label: bucket.label,
+    count: relapsesForInsights.filter(
+      (relapse) => relapse.streakDays >= bucket.min && relapse.streakDays <= bucket.max
+    ).length,
+  }));
 
   const journalDays30 = new Set(
     allJournals
@@ -436,7 +414,7 @@ export default async function DashboardPage() {
                 relapseByTimeBlock={relapseByTimeBlock}
                 weeklyActivity={weeklyActivity}
                 triggerCounts={triggerCounts}
-                journalBeforeRelapse={journalBeforeRelapse}
+                streakDistribution={streakDistribution}
               />
             ) : (
               <div className="mt-12">

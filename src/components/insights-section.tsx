@@ -5,15 +5,12 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   Line,
   LineChart,
-  Pie,
-  PieChart,
   XAxis,
   YAxis,
 } from "recharts";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Info } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
@@ -30,7 +27,7 @@ type InsightsSectionProps = {
   relapseByTimeBlock: { label: string; count: number }[];
   weeklyActivity: { week: string; journals: number; relapses: number }[];
   triggerCounts: { trigger: string; count: number }[];
-  journalBeforeRelapse: { label: string; value: number }[];
+  streakDistribution: { label: string; count: number }[];
 };
 
 const relapseTimeConfig = {
@@ -46,19 +43,16 @@ const triggerConfig = {
   relapses: { label: "Relapses", color: "#E11D48" },
 };
 
-const journalRelapseConfig = {
-  withJournal: { label: "With Journal", color: "#E11D48" },
-  noJournal: { label: "No Journal", color: "#27272a" },
+const streakDistributionConfig = {
+  relapses: { label: "Relapses", color: "#E11D48" },
 };
-
-const pieColors = ["#E11D48", "#27272a"];
 
 export function InsightsSection({
   stats,
   relapseByTimeBlock,
   weeklyActivity,
   triggerCounts,
-  journalBeforeRelapse,
+  streakDistribution,
 }: InsightsSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const hasRelapseTiming = relapseByTimeBlock.some((item) => item.count > 0);
@@ -101,7 +95,15 @@ export function InsightsSection({
             <CardDescription className="text-xs uppercase tracking-widest">
               Snapshot
             </CardDescription>
-            <CardTitle className="text-2xl">Last 30-90 Days</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-2xl">Last 30-90 Days</CardTitle>
+              <span
+                title="Key metrics from the last 30-90 days: average streak length before relapses, journaling frequency, total relapses, and time since last relapse."
+                className="cursor-help"
+              >
+                <Info className="w-4 h-4 text-[#52525b]" />
+              </span>
+            </div>
           </CardHeader>
           <CardContent className="grid md:grid-cols-4 gap-4">
             <div className="border-2 border-[#27272a] p-4 bg-[#050505]">
@@ -146,7 +148,15 @@ export function InsightsSection({
             <CardDescription className="text-xs uppercase tracking-widest">
               Relapses By Time Block
             </CardDescription>
-            <CardTitle className="text-2xl">Time Of Day</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-2xl">Time Of Day</CardTitle>
+              <span
+                title="Shows when relapses typically occur throughout the day. Identifying time patterns can help you prepare for high-risk periods."
+                className="cursor-help"
+              >
+                <Info className="w-4 h-4 text-[#52525b]" />
+              </span>
+            </div>
           </CardHeader>
           <CardContent>
             {hasRelapseTiming ? (
@@ -177,7 +187,15 @@ export function InsightsSection({
             <CardDescription className="text-xs uppercase tracking-widest">
               Journals vs Relapses
             </CardDescription>
-            <CardTitle className="text-2xl">Weekly Activity</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-2xl">Weekly Activity</CardTitle>
+              <span
+                title="Compares your journaling frequency against relapses week by week. Higher journaling often correlates with fewer relapses."
+                className="cursor-help"
+              >
+                <Info className="w-4 h-4 text-[#52525b]" />
+              </span>
+            </div>
           </CardHeader>
           <CardContent>
             <ChartContainer config={weeklyConfig}>
@@ -198,7 +216,15 @@ export function InsightsSection({
             <CardDescription className="text-xs uppercase tracking-widest">
               Top Triggers
             </CardDescription>
-            <CardTitle className="text-2xl">Common Reasons</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-2xl">Common Reasons</CardTitle>
+              <span
+                title="Most frequently cited reasons for relapses. Understanding your triggers helps you develop targeted prevention strategies."
+                className="cursor-help"
+              >
+                <Info className="w-4 h-4 text-[#52525b]" />
+              </span>
+            </div>
           </CardHeader>
           <CardContent>
             {triggerCounts.length ? (
@@ -231,31 +257,43 @@ export function InsightsSection({
         <Card>
           <CardHeader>
             <CardDescription className="text-xs uppercase tracking-widest">
-              Journaling Before Relapse
+              Relapse Risk By Streak Length
             </CardDescription>
-            <CardTitle className="text-2xl">24h Window</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-2xl">Streak Distribution</CardTitle>
+              <span
+                title="Shows how often relapses occur at different streak lengths. Early streaks (0-7 days) are the most vulnerable period. Understanding your danger zones helps you prepare for high-risk moments."
+                className="cursor-help"
+              >
+                <Info className="w-4 h-4 text-[#52525b]" />
+              </span>
+            </div>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={journalRelapseConfig} className="h-[260px]">
-              <PieChart>
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Pie
-                  data={journalBeforeRelapse}
-                  dataKey="value"
-                  nameKey="label"
-                  innerRadius={45}
-                  outerRadius={80}
-                  stroke="#050505"
+            {streakDistribution.some((item) => item.count > 0) ? (
+              <ChartContainer config={streakDistributionConfig} className="h-[260px]">
+                <BarChart
+                  layout="vertical"
+                  data={streakDistribution}
+                  margin={{ left: 8, right: 8 }}
                 >
-                  {journalBeforeRelapse.map((entry, index) => (
-                    <Cell key={entry.label} fill={pieColors[index % pieColors.length]} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ChartContainer>
-            <p className="text-[#52525b] text-xs mt-3">
-              A journal within 24 hours of a relapse signals a warning window.
-            </p>
+                  <CartesianGrid stroke="#27272a" horizontal={false} />
+                  <XAxis type="number" stroke="#52525b" tickLine={false} axisLine={false} allowDecimals={false} />
+                  <YAxis
+                    dataKey="label"
+                    type="category"
+                    stroke="#52525b"
+                    tickLine={false}
+                    axisLine={false}
+                    width={80}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="count" name="Relapses" fill="var(--color-relapses)" />
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <p className="text-[#52525b] text-sm">No streak distribution data yet.</p>
+            )}
           </CardContent>
         </Card>
         </div>
