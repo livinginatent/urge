@@ -46,6 +46,16 @@ export const DISTRACTION_ACTIONS: DistractionAction[] = [
   "Write a positive review for a business you love.",
   "Research a question you've always had (e.g., 'How do stars form?').",
   "Write a letter to your future self, promising to be stronger than this urge.",
+  'Walk through your home backward for two minutes. It’s impossible to stay on "autopilot" when you’re worried about tripping over the rug or hitting a doorframe.',
+  'Draw your urge as a pathetic, cartoon monster. Give it a ridiculous name like "Bartholomew" or "Grumble-peg." It’s harder to be intimidated by an urge when it looks like a doodle.',
+  'Look at a photo of yourself as a child. Look them in the eyes and say out loud: "I’m looking out for us right now."',
+  "Balance a book on your head and walk across the room. You can't cave to an impulse if you're physically committed to staying perfectly level.",
+  'Stand in a "Power Pose" (hands on hips, chest out) for two minutes straight. Science suggests this can lower cortisol and boost your sense of control.',
+  'Practice the "Stare Down" technique: Find a mirror and stare at your reflection for 30 seconds. Say out loud: "I’m stronger than this urge."',
+  'Write a letter to your future self, promising to be stronger than this urge.',
+  "Write down the worst-case scenario if you gave in. Then write the best-case if you don't.",
+  'Write a positive review for a business you love.',
+
 
   // Reddit Posts
 
@@ -102,6 +112,41 @@ export const DISTRACTION_ACTIONS: DistractionAction[] = [
     title: "Stoicism - Ancient philosophy of resilience and self-control",
     url: "https://en.wikipedia.org/wiki/Stoicism",
   },
+  {
+    type: "wiki",
+    title: "Tamam Shud Case",
+    url: "https://en.wikipedia.org/wiki/Somerton_Man#Carl_Webb",
+  },
+  {
+    type: "wiki",
+    title: "Men’s Marathon at the 1904 Summer Olympics",
+    url: "https://en.wikipedia.org/wiki/Athletics_at_the_1904_Summer_Olympics_–_Men%27s_marathon",
+  },
+  {
+    type: "wiki",
+    title: "June 1962 Alcatraz Escape Attempt  – A detailed and well-researched article about a combination mystery and prison escape",
+    url: "https://en.wikipedia.org/wiki/June_1962_Alcatraz_escape_attempt",
+  },
+  {
+    type: "wiki",
+    title: "Uruguayan Air Force Flight 571 – What would you do to survive? ",
+    url: "https://en.wikipedia.org/wiki/Uruguayan_Air_Force_Flight_571",
+  },
+  {
+    type: "wiki",
+    title: "Imperial Trans-Antarctic Expedition  – The unbelievable tale of Endurance and endurance",
+    url: "https://en.wikipedia.org/wiki/Imperial_Trans-Antarctic_Expedition",
+  },
+  {
+    type: "wiki",
+    title: "Historiography of The Simpsons  – When, exactly, did The Simpsons get bad? Did it ever?",
+    url: "https://en.wikipedia.org/wiki/Reception_of_The_Simpsons",
+  },
+  {
+    type: "wiki",
+    title: "Josephine Baker – Dancing, nudity, spying against the Nazis, and overall one of the 20th century’s cooler lives. ",
+    url: "https://en.wikipedia.org/wiki/Josephine_Baker",
+  },
 
   // YouTube Videos
   {
@@ -128,5 +173,15 @@ export const DISTRACTION_ACTIONS: DistractionAction[] = [
     type: "youtube",
     title: "Motivational Speeches - Inspiring talks on resilience",
     url: "https://www.youtube.com/results?search_query=motivational+speeches",
+  },
+  {
+    type: "youtube",
+    title: "Neutron Stars – The Most Extreme Things that are not Black Holes ",
+    url: "https://www.youtube.com/watch?v=udFxKZRyQt4",
+  },
+  {
+    type: "youtube",
+    title: " The Day the Dinosaurs Died – Minute by Minute",
+    url: "https://www.youtube.com/watch?v=dFCbJmgeHmA",
   },
 ];
