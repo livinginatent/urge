@@ -19,6 +19,7 @@ type JournalSectionProps = {
 
 const MAX_JOURNALS_PER_DAY = 3;
 const MAX_CONTENT_LENGTH = 500;
+const PAGE_SIZE = 5;
 
 export function JournalSection({ initialJournals, todayCount, isPaidUser }: JournalSectionProps) {
   const [journals, setJournals] = React.useState<Journal[]>(initialJournals);
@@ -29,6 +30,7 @@ export function JournalSection({ initialJournals, todayCount, isPaidUser }: Jour
     Math.max(0, MAX_JOURNALS_PER_DAY - todayCount)
   );
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
+  const [currentPage, setCurrentPage] = React.useState(1);
 
   const canWrite = isPaidUser || remainingToday > 0;
 
@@ -54,11 +56,12 @@ export function JournalSection({ initialJournals, todayCount, isPaidUser }: Jour
       createdAt: new Date(),
     };
 
-    setJournals([newJournal, ...journals]);
+    setJournals((prev) => [newJournal, ...prev]);
     setContent("");
     if (!isPaidUser) {
       setRemainingToday((prev) => Math.max(0, prev - 1));
     }
+    setCurrentPage(1);
     setIsSubmitting(false);
   };
 
@@ -88,7 +91,12 @@ export function JournalSection({ initialJournals, todayCount, isPaidUser }: Jour
       }
     }
 
-    setJournals(journals.filter((j) => j.id !== journalId));
+    setJournals((prev) => {
+      const updated = prev.filter((j) => j.id !== journalId);
+      const newTotalPages = Math.max(1, Math.ceil(updated.length / PAGE_SIZE));
+      setCurrentPage((prevPage) => Math.min(prevPage, newTotalPages));
+      return updated;
+    });
     setDeletingId(null);
   };
 
@@ -113,6 +121,10 @@ export function JournalSection({ initialJournals, todayCount, isPaidUser }: Jour
     }
     return d.toLocaleDateString([], { month: "short", day: "numeric" });
   };
+
+  const totalPages = Math.max(1, Math.ceil(journals.length / PAGE_SIZE));
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const paginatedJournals = journals.slice(startIndex, startIndex + PAGE_SIZE);
 
   return (
     <Card>
@@ -188,7 +200,7 @@ export function JournalSection({ initialJournals, todayCount, isPaidUser }: Jour
               Recent Entries
             </h4>
             <ul className="space-y-4">
-              {journals.map((journal) => (
+              {paginatedJournals.map((journal) => (
                 <li
                   key={journal.id}
                   className="group py-3 border-b border-[#27272a] last:border-0"
@@ -218,6 +230,41 @@ export function JournalSection({ initialJournals, todayCount, isPaidUser }: Jour
                 </li>
               ))}
             </ul>
+            {journals.length > PAGE_SIZE && (
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 text-xs text-[#a1a1aa]">
+                <span className="text-[#52525b] text-[10px] sm:text-xs text-center sm:text-left">
+                  Showing {startIndex + 1}-
+                  {Math.min(startIndex + PAGE_SIZE, journals.length)} of {journals.length}
+                </span>
+                <div className="flex items-center justify-center sm:justify-end gap-2 flex-wrap">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                    className="px-3 py-1 text-[10px] font-mono"
+                  >
+                    PREV
+                  </Button>
+                  <span className="text-[#52525b] text-[10px] sm:text-xs">
+                    Page {currentPage} / {totalPages}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={currentPage === totalPages}
+                    onClick={() =>
+                      setCurrentPage((page) => Math.min(totalPages, page + 1))
+                    }
+                    className="px-3 py-1 text-[10px] font-mono"
+                  >
+                    NEXT
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
