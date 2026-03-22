@@ -5,9 +5,9 @@ import { verifySession } from "@/lib/dal";
 import { getSubscriptionInfo } from "@/lib/subscription";
 
 export const metadata: Metadata = {
-  title: "URGE – The Cost of Every Urge",
+  title: "QUIT PORN FOR GOOD – The Cost of Every Urge",
   description:
-    "URGE turns your urges into a streak to defend. Pay a small monthly cost to make every relapse hurt—and every victory count.",
+    "QUIT PORN FOR GOOD - turn your urges into a streak to defend. Pay a small monthly cost to make every relapse hurt—and every victory count.",
   alternates: {
     canonical: "/",
   },

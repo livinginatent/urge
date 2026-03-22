@@ -65,11 +65,11 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
           className="text-center max-w-5xl"
         >
           <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold text-white tracking-brutal leading-[0.9] mb-8">
-            EVERY
+            QUIT
             <br />
-            <span className="text-[#E11D48]">URGE</span>
+            <span className="text-[#E11D48]">PORN</span>
             <br />
-            HAS A COST
+            FOR GOOD
           </h1>
           
           <p className="text-[#52525b] text-lg md:text-xl max-w-xl mx-auto font-mono">
@@ -306,6 +306,9 @@ export function LandingContent({ subscriptionInfo }: LandingContentProps) {
               </p>
               <p className="text-white font-bold text-lg">
                 The question isn&apos;t if you&apos;ll pay — it&apos;s <span className="text-[#E11D48]">when</span>.
+              </p>
+              <p className="text-[#52525b] text-sm">
+                <span className="text-[#E11D48]">QUIT PORN AND MASTURBATION FOR GOOD</span> - turn your urges into a streak to defend. Pay a small monthly cost to make every relapse hurt—and every victory count.
               </p>
             </div>
           </FadeInSection>
